@@ -2,14 +2,14 @@ import {Subject} from 'rxjs';
 
 type Event = {
   type: string;
-  path: PropertyKey;
+  path: PropertyKey[];
 };
 
-function createProxy<T extends object>(obj: T): [T, Subject<Event>] {
+function createProxy<T extends object>(target: T): [T, Subject<Event>] {
   const $ = new Subject<Event>();
-  const proxy = new Proxy<T>(obj, {
+  const proxy = new Proxy<T>(target, {
     get: (target: T, propertyKey: PropertyKey, receiver?: any) => {
-      $.next({type: 'get', path: propertyKey});
+      $.next({type: 'get', path: [propertyKey]});
       return Reflect.get(target, propertyKey, receiver);
     },
     set: (
@@ -18,11 +18,24 @@ function createProxy<T extends object>(obj: T): [T, Subject<Event>] {
       value: any,
       receiver?: any
     ): boolean => {
-      $.next({type: 'set', path: propertyKey});
+      $.next({type: 'set', path: [propertyKey]});
       Reflect.set(target, propertyKey, value, receiver);
       return true;
     },
   });
+  for (const propertyKey of Object.keys(target)) {
+    const value = Reflect.get(target, propertyKey);
+    if (typeof value === 'object' && value !== null) {
+      const [subProxy, sub$] = createProxy(value);
+      Reflect.set(target, propertyKey, subProxy);
+      sub$.subscribe(event =>
+        $.next({
+          ...event,
+          path: [propertyKey, ...event.path],
+        })
+      );
+    }
+  }
   return [proxy, $];
 }
 
@@ -34,4 +47,6 @@ proxy.a = 'world';
 console.log(proxy.a);
 console.log(proxy);
 console.log(proxy.b);
+console.log(proxy.b.c);
+proxy.b.c = 'yes!';
 console.log(proxy.b.c);
