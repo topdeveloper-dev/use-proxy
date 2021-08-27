@@ -1,12 +1,16 @@
 import {Subject} from 'rxjs';
 
-function createProxy<T extends object>(obj: T): T & {$: Subject<any>} {
-  const $ = new Subject();
-  return new Proxy<T & {$: Subject<any>}>(
-    {...obj, $},
-    {
+type Event = {
+  type: string;
+  path: PropertyKey;
+};
+
+function createProxy<T extends object>(obj: T): [T, Subject<Event>] {
+  const $ = new Subject<Event>();
+  return [
+    new Proxy<T>(obj, {
       get: (target: T, propertyKey: PropertyKey, receiver?: any) => {
-        console.log('get', propertyKey);
+        $.next({type: 'get', path: propertyKey});
         return Reflect.get(target, propertyKey, receiver);
       },
       set: (
@@ -15,16 +19,21 @@ function createProxy<T extends object>(obj: T): T & {$: Subject<any>} {
         value: any,
         receiver?: any
       ): boolean => {
-        console.log('set', propertyKey);
+        $.next({type: 'set', path: propertyKey});
         Reflect.set(target, propertyKey, value, receiver);
         return true;
       },
-    }
-  );
+    }),
+    $,
+  ];
 }
 
-const proxy = createProxy({a: 'hello'});
+const [proxy, $] = createProxy({a: 'hello', b: {c: 'world'}});
+$.subscribe(event => console.log(event));
+
 console.log(proxy.a);
 proxy.a = 'world';
 console.log(proxy.a);
 console.log(proxy);
+console.log(proxy.b);
+console.log(proxy.b.c);
