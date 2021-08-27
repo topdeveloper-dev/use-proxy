@@ -1,6 +1,6 @@
 import {Subject} from 'rxjs';
 
-type Event = {
+export type Event = {
   type: string;
   path: PropertyKey[];
 };
