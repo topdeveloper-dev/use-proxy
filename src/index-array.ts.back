@@ -1,0 +1,22 @@
+const arr = [1, 2, 3];
+const proxyHandler: ProxyHandler<Array<number>> = {
+  get: (target: Array<number>, p: string | symbol, receiver: any) => {
+    console.log('get', p);
+    return Reflect.get(target, p, receiver);
+  },
+  set: (
+    target: Array<number>,
+    p: string | symbol,
+    value: any,
+    receiver: any
+  ): boolean => {
+    console.log('set', p);
+    Reflect.set(target, p, value, receiver);
+    return true;
+  },
+};
+const proxy = new Proxy<Array<number>>(arr, proxyHandler);
+
+console.log(proxy[1]);
+proxy[1] = 5;
+console.log(proxy[1]);
