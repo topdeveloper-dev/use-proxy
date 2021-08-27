@@ -5,7 +5,18 @@ export type Event = {
   path: PropertyKey[];
 };
 
-export function createProxy<T extends object>(target: T): [T, Subject<Event>] {
+export function useProxy<T extends object>(target: T): [T, Subject<Event>] {
+  const setObjectValue = (propertyKey: PropertyKey, value: any) => {
+    const [subProxy, sub$] = useProxy(value);
+    Reflect.set(target, propertyKey, subProxy);
+    sub$.subscribe(event =>
+      $.next({
+        ...event,
+        path: [propertyKey, ...event.path],
+      })
+    );
+  };
+
   const $ = new Subject<Event>();
   const proxy = new Proxy<T>(target, {
     get: (target: T, propertyKey: PropertyKey, receiver?: any) => {
@@ -18,22 +29,19 @@ export function createProxy<T extends object>(target: T): [T, Subject<Event>] {
       value: any,
       receiver?: any
     ): boolean => {
+      if (typeof value === 'object' && value !== null) {
+        setObjectValue(propertyKey, value);
+      } else {
+        Reflect.set(target, propertyKey, value, receiver);
+      }
       $.next({type: 'set', path: [propertyKey]});
-      Reflect.set(target, propertyKey, value, receiver);
       return true;
     },
   });
   for (const propertyKey of Object.keys(target)) {
     const value = Reflect.get(target, propertyKey);
     if (typeof value === 'object' && value !== null) {
-      const [subProxy, sub$] = createProxy(value);
-      Reflect.set(target, propertyKey, subProxy);
-      sub$.subscribe(event =>
-        $.next({
-          ...event,
-          path: [propertyKey, ...event.path],
-        })
-      );
+      setObjectValue(propertyKey, value);
     }
   }
   return [proxy, $];

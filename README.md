@@ -11,4 +11,5 @@ The long term goal is to make `sub-x` suitable to be used in very complicated ap
 
 - Ref: https://stackoverflow.com/questions/51865430/typescript-compiler-does-not-know-about-es6-proxy-trap-on-class
 - Rename to "Recursive Proxy"
+  - useProxy?
 - EventEmitter instead of rxjs?
