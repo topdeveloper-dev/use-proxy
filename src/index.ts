@@ -5,7 +5,7 @@ type Event = {
   path: PropertyKey[];
 };
 
-function createProxy<T extends object>(target: T): [T, Subject<Event>] {
+export function createProxy<T extends object>(target: T): [T, Subject<Event>] {
   const $ = new Subject<Event>();
   const proxy = new Proxy<T>(target, {
     get: (target: T, propertyKey: PropertyKey, receiver?: any) => {
@@ -38,15 +38,3 @@ function createProxy<T extends object>(target: T): [T, Subject<Event>] {
   }
   return [proxy, $];
 }
-
-const [proxy, $] = createProxy({a: 'hello', b: {c: 'world'}});
-$.subscribe(event => console.log(event));
-
-console.log(proxy.a);
-proxy.a = 'world';
-console.log(proxy.a);
-console.log(proxy);
-console.log(proxy.b);
-console.log(proxy.b.c);
-proxy.b.c = 'yes!';
-console.log(proxy.b.c);
