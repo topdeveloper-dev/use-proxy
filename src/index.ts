@@ -45,8 +45,11 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       if (propertyKey === emitterKey) {
         return eventEmitter;
       }
-      eventEmitter.emit('event', new AccessEvent('get', [propertyKey]));
-      return Reflect.get(target, propertyKey);
+      const value = Reflect.get(target, propertyKey);
+      if (typeof value !== 'function') {
+        eventEmitter.emit('event', new AccessEvent('get', [propertyKey]));
+      }
+      return value;
     },
     set: (target: T, propertyKey: PropertyKey, value: any): boolean => {
       // disconnect old value parent

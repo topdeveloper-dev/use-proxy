@@ -13,10 +13,7 @@ describe('getter', () => {
       events.push(event);
     });
     if (proxy.visibleTodos) {
-      expect(events).toEqual([
-        {name: 'get', paths: ['visibleTodos']},
-        // {name: 'get', paths: ['visibility']},
-      ]);
+      expect(events).toEqual([{name: 'get', paths: ['visibleTodos']}]);
     }
   });
 
@@ -32,10 +29,7 @@ describe('getter', () => {
       events.push(event);
     });
     if (proxy.visibleTodos()) {
-      expect(events).toEqual([
-        {name: 'get', paths: ['visibleTodos']},
-        {name: 'get', paths: ['visibility']},
-      ]);
+      expect(events).toEqual([{name: 'get', paths: ['visibility']}]);
     }
   });
 
