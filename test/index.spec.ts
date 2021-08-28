@@ -1,4 +1,4 @@
-import {useProxy} from '../src/temp3';
+import {useProxy} from '../src';
 import {getEmitter} from '../src/utils';
 import {Event} from '../src/types';
 
