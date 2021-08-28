@@ -54,6 +54,17 @@ class App extends Component<AppProps> {
 }
 ```
 
+## Utility methods
+
+### `runAndMonitor`
+
+The signature of `runAndMonitor` is
+
+```ts
+(emitter: EventEmitter, f: Function): [any, EventEmitter]
+```
+
+
 ## For maintainers
 
 ### How to publish

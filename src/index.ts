@@ -71,3 +71,31 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
 
   return [proxy, eventEmitter];
 }
+
+export const runAndMonitor = (
+  emitter: EventEmitter,
+  f: Function
+): [any, EventEmitter] => {
+  const events: AccessEvent[] = [];
+  emitter.on('event', (event: AccessEvent) => events.push(event));
+  const result = f();
+  emitter.removeAllListeners();
+  const getPaths = [
+    ...new Set(
+      events
+        .filter(event => event.name === 'get')
+        .map(event => event.pathString())
+    ),
+  ];
+  const newEmitter = new EventEmitter();
+  emitter.on('event', (event: AccessEvent) => {
+    if (event.name === 'set') {
+      const setPath = event.pathString();
+      if (getPaths.some(getPath => getPath.startsWith(setPath))) {
+        // if setPath is shorter than getPath, then it's time to refresh
+        newEmitter.emit('event', event);
+      }
+    }
+  });
+  return [result, newEmitter];
+};

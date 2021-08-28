@@ -1,7 +1,7 @@
 const config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testTimeout: 8000,
+  testTimeout: 1000,
 };
 
 export default config;
