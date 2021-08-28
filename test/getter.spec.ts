@@ -53,9 +53,8 @@ describe('getter', () => {
         return Reflect.get(target, propertyKey);
       },
     });
-    if (proxy.visible()) {
-      expect(accessList).toEqual(['visible', 'hidden']);
-    }
+    expect(proxy.visible()).toBe(true);
+    expect(accessList).toEqual(['visible', 'hidden']);
   });
 
   test('JS Proxy getter method', () => {
@@ -72,8 +71,7 @@ describe('getter', () => {
         return Reflect.get(target, propertyKey);
       },
     });
-    if (proxy.visible) {
-      expect(accessList).toEqual(['visible']);
-    }
+    expect(proxy.visible).toBe(true);
+    expect(accessList).toEqual(['visible']);
   });
 });
