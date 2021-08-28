@@ -1,7 +1,7 @@
 export class Event {
-  name: string;
+  name: 'get' | 'set';
   paths: PropertyKey[];
-  constructor(name: string, paths: PropertyKey[]) {
+  constructor(name: 'get' | 'set', paths: PropertyKey[]) {
     this.name = name;
     this.paths = paths;
   }
