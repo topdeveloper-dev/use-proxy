@@ -81,8 +81,22 @@ For a sample usage of `runAndMonitor`, please check `./src/react.ts`.
 npm publish --access=public
 ```
 
+And by experiment I find that `--access=public` is only needed when the first time you release this library to https://www.npmjs.com/.
+
+Subsequent releases can omit `--access=public` and the release is still public.
+
 
 ## Known issue
 
 - It doesn't with getters. Check [./test/getter.spec.ts](./test/getter.spec.ts).
   - Bonus: cache getter result to improve performance
+- It only monitors `get` and `set` of properties. It doesn't monitor `delete`, `has` and `keys`. Because in 99.9% cases, `get` & `set` are sufficient to monitor and manage data.
+- The react integration rewrites `shouldComponentUpdate` to always return `false`. It won't be an issue if you totally rely on `useProxy` to update the component.
+- “MaxListenersExceededWarning: Possible EventEmitter memory leak detected”
+  - You may see this warning message. Because this project uses lots of eventListeners to track data change.
+  - I don't think there is memory leak. It is by design. But it's till annoying to see this warning.
+
+
+## Todo
+
+- Add logging, easily turn on and off
