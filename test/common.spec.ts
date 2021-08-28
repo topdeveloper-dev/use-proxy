@@ -7,7 +7,7 @@ describe('index', () => {
       console.log(message);
     };
     eventEmitter.on('event', callback);
-    eventEmitter.off('event', callback);
+    eventEmitter.removeAllListeners();
     eventEmitter.emit('event', 'Hello');
   });
 });
