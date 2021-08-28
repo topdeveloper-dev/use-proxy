@@ -1,8 +1,19 @@
 import {EventEmitter} from 'events';
 
 import {emitterKey} from './constants';
-import {Event} from './types';
 import {getEmitter, canProxy} from './utils';
+
+export class AccessEvent {
+  name: 'get' | 'set';
+  paths: PropertyKey[];
+  constructor(name: 'get' | 'set', paths: PropertyKey[]) {
+    this.name = name;
+    this.paths = paths;
+  }
+  pathString() {
+    return this.paths.join('+');
+  }
+}
 
 const disconnectParent = (oldValue: any) => {
   const emitter = getEmitter(oldValue);
@@ -17,10 +28,10 @@ export function useProxy<T extends object>(target: T): T {
   const connectChild = (propertyKey: PropertyKey, value: any) => {
     const subProxy = getEmitter(value) ? value : useProxy(value);
     const subEventEmitter = getEmitter(subProxy)!;
-    subEventEmitter.on('event', (event: Event) => {
+    subEventEmitter.on('event', (event: AccessEvent) => {
       eventEmitter.emit(
         'event',
-        new Event(event.name, [propertyKey, ...event.paths])
+        new AccessEvent(event.name, [propertyKey, ...event.paths])
       );
     });
     Reflect.set(target, propertyKey, subProxy);
@@ -31,7 +42,7 @@ export function useProxy<T extends object>(target: T): T {
       if (propertyKey === emitterKey) {
         return eventEmitter;
       }
-      eventEmitter.emit('event', new Event('get', [propertyKey]));
+      eventEmitter.emit('event', new AccessEvent('get', [propertyKey]));
       return Reflect.get(target, propertyKey, receiver);
     },
     set: (
@@ -46,7 +57,7 @@ export function useProxy<T extends object>(target: T): T {
       } else {
         Reflect.set(target, propertyKey, value, receiver);
       }
-      eventEmitter.emit('event', new Event('set', [propertyKey]));
+      eventEmitter.emit('event', new AccessEvent('set', [propertyKey]));
       return true;
     },
   });
