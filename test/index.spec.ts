@@ -29,4 +29,25 @@ describe('index', () => {
       {type: 'set', path: ['b', 'c']},
     ]);
   });
+
+  test('set same obj multiple times', () => {
+    type A = {
+      b?: {c: string};
+    };
+    const [proxy, $] = useProxy<A>({});
+    console.log(typeof proxy);
+    const events: Event[] = [];
+    $.subscribe(event => events.push(event));
+    proxy.b = {c: 'hello'};
+    const temp = proxy.b;
+    proxy.b = temp;
+    proxy.b = temp;
+    proxy.b.c = 'world';
+    console.log(events);
+    // expect(events).toEqual([
+    //   {type: 'set', path: ['b']},
+    //   {type: 'get', path: ['b']},
+    //   {type: 'set', path: ['b', 'c']},
+    // ]);
+  });
 });
