@@ -25,13 +25,6 @@ export const getEmitter = (obj: any): EventEmitter | undefined => {
   return Reflect.get(obj, emitterKey);
 };
 
-const disconnectParent = (oldValue: any) => {
-  const emitter = getEmitter(oldValue);
-  if (emitter) {
-    emitter.removeAllListeners();
-  }
-};
-
 export function useProxy<T extends object>(target: T): T {
   const eventEmitter = new EventEmitter();
 
@@ -56,7 +49,8 @@ export function useProxy<T extends object>(target: T): T {
       return Reflect.get(target, propertyKey);
     },
     set: (target: T, propertyKey: PropertyKey, value: any): boolean => {
-      disconnectParent(Reflect.get(target, propertyKey));
+      // disconnect old value parent
+      getEmitter(Reflect.get(target, propertyKey))?.removeAllListeners();
       if (canProxy(value)) {
         connectChild(propertyKey, value);
       } else {
