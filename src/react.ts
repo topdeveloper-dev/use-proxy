@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {getEmitter} from './utils';
+import {getEmitter} from '.';
 import {useProxy, AccessEvent} from '.';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {

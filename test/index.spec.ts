@@ -1,5 +1,4 @@
-import {useProxy, AccessEvent} from '../src';
-import {getEmitter} from '../src/utils';
+import {useProxy, AccessEvent, getEmitter} from '../src';
 
 describe('index', () => {
   test('default', () => {
