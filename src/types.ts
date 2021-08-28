@@ -5,4 +5,7 @@ export class Event {
     this.name = name;
     this.paths = paths;
   }
+  pathString() {
+    return this.paths.join('+');
+  }
 }

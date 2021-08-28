@@ -17,10 +17,21 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
       });
       const result = render();
       emitter.removeAllListeners();
+      const getPaths = [
+        ...new Set(
+          events
+            .filter(event => event.name === 'get')
+            .map(event => event.pathString())
+        ),
+      ];
       emitter.on('event', (event: Event) => {
         if (event.name === 'set') {
-          this.forceUpdate();
-          emitter.removeAllListeners();
+          const setPath = event.pathString();
+          if (getPaths.some(getPath => getPath.startsWith(setPath))) {
+            // if setPath is short than getPath, then it's time to refresh
+            this.forceUpdate();
+            emitter.removeAllListeners();
+          }
         }
       });
       return result;
