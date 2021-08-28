@@ -41,7 +41,9 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
         new AccessEvent(event.name, [propertyKey, ...event.paths])
       );
     });
-    Reflect.set(target, propertyKey, subProxy, receiver);
+    // todo
+    // Reflect.set(target, propertyKey, subProxy, receiver);
+    Reflect.set(target, propertyKey, subProxy);
   };
 
   const proxy = new Proxy(target, {
