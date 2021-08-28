@@ -2,7 +2,7 @@ import React from 'react';
 
 import {getEmitter} from './utils';
 import {Event} from './types';
-import {useProxy} from './temp3';
+import {useProxy} from '.';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   constructor(props: Readonly<P>) {

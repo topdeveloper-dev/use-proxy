@@ -2,7 +2,7 @@ import TestRenderer from 'react-test-renderer';
 import React from 'react';
 
 import {Component} from '../src/react';
-import {useProxy} from '../src/temp3';
+import {useProxy} from '../src';
 
 class Store {
   number = 0;
