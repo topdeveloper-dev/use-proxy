@@ -1,10 +1,13 @@
 {
   "license": "MIT",
-  "name": "use-proxy",
-  "version": "0.1.0",
+  "name": "@tylerlong/use-proxy",
+  "version": "0.2.0",
   "repository": "git@github.com:tylerlong/use-proxy.git",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "test": "jest -w 1"
+    "test": "jest -w 1",
+    "prepublishOnly": "tsc"
   },
   "dependencies": {
     "react": "^17.0.2",
