@@ -13,7 +13,8 @@ Unlike `useState`, which only works with React functions; `useProxy` mainly work
 
 It allows you to maintain your app state in OOP style. 
 
-I am not saying that OOP style is the best practice for React development. But React Hooks functional style is not my cup of tea.
+I am not saying that OOP style is the best practice for React development. 
+But React Hooks' functional style is hardly my cup of tea.
 
 
 ## Installation
