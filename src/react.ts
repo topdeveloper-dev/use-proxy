@@ -6,12 +6,9 @@ import {useProxy, runAndMonitor} from '.';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   emitter?: EventEmitter;
-  newEmitter?: EventEmitter;
   dispose() {
     this.emitter?.removeAllListeners();
-    this.emitter?.removeAllListeners();
     delete this.emitter;
-    delete this.newEmitter;
   }
 
   constructor(props: Readonly<P>) {

@@ -98,5 +98,5 @@ Subsequent releases can omit `--access=public` and the release is still public.
 - Add logging, easily turn on and off
 - “MaxListenersExceededWarning: Possible EventEmitter memory leak detected”
   - Fix it!
-- no more removeAllListeners, use parent/children to track precisely
+  - no more removeAllListeners, use parent/children to track precisely
 - cache data for getter functions, just like what I did in SubX project
