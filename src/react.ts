@@ -40,5 +40,10 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     } else {
       this.componentWillUnmount = () => this.dispose();
     }
+
+    // rewrite shouldComponentUpdate
+    this.shouldComponentUpdate = () => {
+      return false;
+    };
   }
 }
