@@ -1,7 +1,7 @@
 {
   "license": "MIT",
   "name": "@tylerlong/use-proxy",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "repository": "git@github.com:tylerlong/use-proxy.git",
   "main": "build/index.js",
   "types": "build/index.d.ts",
