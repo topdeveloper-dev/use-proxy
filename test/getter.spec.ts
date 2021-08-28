@@ -13,7 +13,10 @@ describe('getter', () => {
       events.push(event);
     });
     if (proxy.visibleTodos) {
-      expect(events).toEqual([{name: 'get', paths: ['visibleTodos']}]);
+      expect(events).toEqual([
+        {name: 'get', paths: ['visibility']},
+        {name: 'get', paths: ['visibleTodos']},
+      ]);
     }
   });
 
@@ -42,9 +45,9 @@ describe('getter', () => {
     }
     const accessList: PropertyKey[] = [];
     const proxy = new Proxy<Store>(new Store(), {
-      get: (target: any, propertyKey: PropertyKey) => {
+      get: (target: any, propertyKey: PropertyKey, receiver: any) => {
         accessList.push(propertyKey);
-        return Reflect.get(target, propertyKey);
+        return Reflect.get(target, propertyKey, receiver);
       },
     });
     expect(proxy.visible()).toBe(true);
@@ -60,12 +63,12 @@ describe('getter', () => {
     }
     const accessList: PropertyKey[] = [];
     const proxy = new Proxy<Store>(new Store(), {
-      get: (target: any, propertyKey: PropertyKey) => {
+      get: (target: any, propertyKey: PropertyKey, receiver: any) => {
         accessList.push(propertyKey);
-        return Reflect.get(target, propertyKey);
+        return Reflect.get(target, propertyKey, receiver);
       },
     });
     expect(proxy.visible).toBe(true);
-    expect(accessList).toEqual(['visible']);
+    expect(accessList).toEqual(['visible', 'hidden']);
   });
 });

@@ -28,7 +28,11 @@ export const getEmitter = (obj: any): EventEmitter | undefined => {
 export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   const eventEmitter = new EventEmitter();
 
-  const connectChild = (propertyKey: PropertyKey, value: any) => {
+  const connectChild = (
+    propertyKey: PropertyKey,
+    value: any,
+    receiver?: any
+  ) => {
     const subProxy = getEmitter(value) ? value : useProxy(value)[0];
     const subEventEmitter = getEmitter(subProxy)!;
     subEventEmitter.on('event', (event: AccessEvent) => {
@@ -37,27 +41,32 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
         new AccessEvent(event.name, [propertyKey, ...event.paths])
       );
     });
-    Reflect.set(target, propertyKey, subProxy);
+    Reflect.set(target, propertyKey, subProxy, receiver);
   };
 
   const proxy = new Proxy(target, {
-    get: (target: T, propertyKey: PropertyKey) => {
+    get: (target: T, propertyKey: PropertyKey, receiver?: any) => {
       if (propertyKey === emitterKey) {
         return eventEmitter;
       }
-      const value = Reflect.get(target, propertyKey);
+      const value = Reflect.get(target, propertyKey, receiver);
       if (typeof value !== 'function') {
         eventEmitter.emit('event', new AccessEvent('get', [propertyKey]));
       }
       return value;
     },
-    set: (target: T, propertyKey: PropertyKey, value: any): boolean => {
+    set: (
+      target: T,
+      propertyKey: PropertyKey,
+      value: any,
+      receiver?: any
+    ): boolean => {
       // disconnect old value parent
       getEmitter(Reflect.get(target, propertyKey))?.removeAllListeners();
       if (canProxy(value)) {
-        connectChild(propertyKey, value);
+        connectChild(propertyKey, value, receiver);
       } else {
-        Reflect.set(target, propertyKey, value);
+        Reflect.set(target, propertyKey, value, receiver);
       }
       eventEmitter.emit('event', new AccessEvent('set', [propertyKey]));
       return true;
