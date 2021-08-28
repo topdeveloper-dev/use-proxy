@@ -61,8 +61,16 @@ class App extends Component<AppProps> {
 The signature of `runAndMonitor` is
 
 ```ts
-(emitter: EventEmitter, f: Function): [any, EventEmitter]
+(emitter: EventEmitter, f: Function): [result: any, newEmitter: EventEmitter]
 ```
+
+- `emitter` is generated from `useProxy` method: `const[, emitter] = useProxy(state)`
+- `f` is the function to execute
+- `result` is the result of `f()`
+- `newEmitter` is a new EventEmitter which emits events whenever data changes in proxy which will affect the result of `f()`
+  - when you get an event from `newEmitter`, most likely it means it's time to run `f()` again
+
+For a sample usage of `runAndMonitor`, please check `./src/react.ts`.
 
 
 ## For maintainers

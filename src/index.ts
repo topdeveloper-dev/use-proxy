@@ -75,7 +75,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
 export const runAndMonitor = (
   emitter: EventEmitter,
   f: Function
-): [any, EventEmitter] => {
+): [result: any, newEmitter: EventEmitter] => {
   const events: AccessEvent[] = [];
   emitter.on('event', (event: AccessEvent) => events.push(event));
   const result = f();
