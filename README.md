@@ -9,7 +9,7 @@ Unlike `useState`, which only works with React functions; `useProxy` mainly work
 `useProxy` is the successor of [SubX](https://github.com/tylerlong/subx), which is similar to MobX.
 
 
-## What's the value of `userProxy`?
+## What's the value of `useProxy`?
 
 It allows you to maintain your app state in OOP style. 
 
