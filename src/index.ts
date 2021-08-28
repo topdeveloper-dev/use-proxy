@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
 
-const emitterKey: PropertyKey = 'eventEmitter';
+const emitterKey: PropertyKey = '__eventEmitter__';
 
 export class AccessEvent {
   name: 'get' | 'set';
