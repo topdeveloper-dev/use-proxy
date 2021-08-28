@@ -2,29 +2,30 @@ import {EventEmitter} from 'events';
 
 import {emitterKey} from './constants';
 import {Event} from './types';
-import {getEmitter} from './utils';
+import {getEmitter, canProxy} from './utils';
+
+const disconnectParent = (oldValue: any) => {
+  const emitter = getEmitter(oldValue);
+  if (emitter) {
+    emitter.removeAllListeners();
+  }
+};
 
 export function useProxy<T extends object>(target: T): T {
-  const setObjectValue = (propertyKey: PropertyKey, value: any) => {
-    const subProxy = Reflect.get(value, emitterKey) ? value : useProxy(value);
-    const subEventEmitter = Reflect.get(subProxy, emitterKey) as EventEmitter;
-    const callback = (event: Event) => {
+  const eventEmitter = new EventEmitter();
+
+  const connectChild = (propertyKey: PropertyKey, value: any) => {
+    const subProxy = getEmitter(value) ? value : useProxy(value);
+    const subEventEmitter = getEmitter(subProxy)!;
+    subEventEmitter.on('event', (event: Event) => {
       eventEmitter.emit(
         'event',
         new Event(event.name, [propertyKey, ...event.paths])
       );
-    };
-    subEventEmitter.removeAllListeners();
-    subEventEmitter.on('event', callback);
+    });
     Reflect.set(target, propertyKey, subProxy);
   };
-  const handleOldValue = (oldValue: any) => {
-    const emitter = getEmitter(oldValue);
-    if (emitter) {
-      emitter.removeAllListeners();
-    }
-  };
-  const eventEmitter = new EventEmitter();
+
   const proxy = new Proxy(target, {
     get: (target: T, propertyKey: PropertyKey, receiver?: any) => {
       if (propertyKey === emitterKey) {
@@ -39,9 +40,9 @@ export function useProxy<T extends object>(target: T): T {
       value: any,
       receiver?: any
     ): boolean => {
-      handleOldValue(Reflect.get(target, propertyKey));
-      if (typeof value === 'object' && value !== null) {
-        setObjectValue(propertyKey, value);
+      disconnectParent(Reflect.get(target, propertyKey));
+      if (canProxy(value)) {
+        connectChild(propertyKey, value);
       } else {
         Reflect.set(target, propertyKey, value, receiver);
       }
@@ -49,12 +50,14 @@ export function useProxy<T extends object>(target: T): T {
       return true;
     },
   });
+
+  // first time init
   for (const propertyKey of Object.keys(target)) {
     const value = Reflect.get(target, propertyKey);
-    handleOldValue(value);
-    if (typeof value === 'object' && value !== null) {
-      setObjectValue(propertyKey, value);
+    if (canProxy(value)) {
+      connectChild(propertyKey, value);
     }
   }
+
   return proxy;
 }
