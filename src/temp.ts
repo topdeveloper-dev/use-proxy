@@ -4,13 +4,13 @@ const emitterKey: PropertyKey = 'eventEmitter';
 
 export const subscribe = (
   proxy: any,
-  paths: string[],
-  callback: (eventName: string, paths: string[]) => void
+  callback: (eventName: string, paths: string[]) => void,
+  paths: string[] = []
 ) => {
   for (const propertyKey of Object.keys(proxy)) {
     const value = Reflect.get(proxy, propertyKey);
     if (typeof value === 'object' && value !== null) {
-      subscribe(value, [...paths, propertyKey], callback);
+      subscribe(value, callback, [...paths, propertyKey]);
     }
   }
   const eventEmitter = Reflect.get(proxy, emitterKey);
