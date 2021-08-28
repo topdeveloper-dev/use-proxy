@@ -1,14 +1,18 @@
 import {EventEmitter} from 'events';
 
 import {emitterKey} from './constants';
+import {Event} from './types';
 import {getEmitter} from './utils';
 
 export function useProxy<T extends object>(target: T): T {
   const setObjectValue = (propertyKey: PropertyKey, value: any) => {
     const subProxy = Reflect.get(value, emitterKey) ? value : useProxy(value);
     const subEventEmitter = Reflect.get(subProxy, emitterKey) as EventEmitter;
-    const callback = (eventName: string, paths: PropertyKey[]) => {
-      eventEmitter.emit('event', eventName, [propertyKey, ...paths]);
+    const callback = (event: Event) => {
+      eventEmitter.emit('event', {
+        ...event,
+        paths: [propertyKey, ...event.paths],
+      });
     };
     subEventEmitter.removeAllListeners();
     subEventEmitter.on('event', callback);
@@ -26,7 +30,7 @@ export function useProxy<T extends object>(target: T): T {
       if (propertyKey === emitterKey) {
         return eventEmitter;
       }
-      eventEmitter.emit('event', 'get', [propertyKey]);
+      eventEmitter.emit('event', {name: 'get', paths: [propertyKey]});
       return Reflect.get(target, propertyKey, receiver);
     },
     set: (
@@ -41,7 +45,7 @@ export function useProxy<T extends object>(target: T): T {
       } else {
         Reflect.set(target, propertyKey, value, receiver);
       }
-      eventEmitter.emit('event', 'set', [propertyKey]);
+      eventEmitter.emit('event', {name: 'set', paths: [propertyKey]});
       return true;
     },
   });
