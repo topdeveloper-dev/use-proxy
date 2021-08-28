@@ -1,7 +1,8 @@
 {
   "license": "MIT",
-  "name": "sub-x",
+  "name": "use-proxy",
   "version": "0.1.0",
+  "repository": "git@github.com:tylerlong/use-proxy.git",
   "scripts": {
     "test": "jest -w 1"
   },

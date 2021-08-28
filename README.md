@@ -1,15 +1,17 @@
-# sub-x
+# useProxy
 
-This project is a rewrite of the [subx](https://github.com/tylerlong/subx) project.
+The name `useProxy` was inspired by React [useState](https://reactjs.org/docs/hooks-state.html).
 
-`subx` was designed for JavaScript while `sub-x` focuses on TypeScript from the very beginning.
+Just like `useState`, it is mainly designed to work with React applications. 
 
-The long term goal is to make `sub-x` suitable to be used in very complicated applications.
+Unlike `useState`, which only works with React functions; `useProxy` mainly works with React classes.
+
+`useProxy` is the successor of [SubX](https://github.com/tylerlong/subx), which is similar to MobX.
 
 
-## Notes
+## Installation
 
-- Ref: https://stackoverflow.com/questions/51865430/typescript-compiler-does-not-know-about-es6-proxy-trap-on-class
-- Rename to "Recursive Proxy"
-  - useProxy?
-- EventEmitter instead of rxjs?
+```
+yarn add use-proxy
+```
+
