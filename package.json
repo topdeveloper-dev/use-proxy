@@ -1,17 +1,13 @@
 {
   "license": "MIT",
   "name": "@tylerlong/use-proxy",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": "git@github.com:tylerlong/use-proxy.git",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
     "test": "jest -w 1",
     "prepublishOnly": "tsc"
-  },
-  "dependencies": {
-    "react": "^17.0.2",
-    "rxjs": "^7.3.0"
   },
   "devDependencies": {
     "@types/jest": "^27.0.1",
@@ -20,6 +16,7 @@
     "@types/react-test-renderer": "^17.0.1",
     "gts": "^3.1.0",
     "jest": "^27.1.0",
+    "react": "^17.0.2",
     "react-test-renderer": "^17.0.2",
     "ts-jest": "^27.0.5",
     "ts-node": "^10.2.1",
