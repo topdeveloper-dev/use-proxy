@@ -1,4 +1,8 @@
-export type Event = {
+export class Event {
   name: string;
-  paths: string[];
-};
+  paths: PropertyKey[];
+  constructor(name: string, paths: PropertyKey[]) {
+    this.name = name;
+    this.paths = paths;
+  }
+}
