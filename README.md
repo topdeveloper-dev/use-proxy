@@ -80,3 +80,9 @@ For a sample usage of `runAndMonitor`, please check `./src/react.ts`.
 ```
 npm publish --access=public
 ```
+
+
+## Known issue
+
+- It doesn't with getters. Check [./test/getter.spec.ts](./test/getter.spec.ts).
+  - Bonus: cache getter result to improve performance
