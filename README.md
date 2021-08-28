@@ -89,6 +89,7 @@ Subsequent releases can omit `--access=public` and the release is still public.
 ## Known issue
 
 - It doesn't with getters. Check [./test/getter.spec.ts](./test/getter.spec.ts).
+  - https://stackoverflow.com/questions/68967002/weird-issue-about-javascript-proxy-and-getter-functions
   - Bonus: cache getter result to improve performance
 - It only monitors `get` and `set` of properties. It doesn't monitor `delete`, `has` and `keys`. Because in 99.9% cases, `get` & `set` are sufficient to monitor and manage data.
 - The react integration rewrites `shouldComponentUpdate` to always return `false`. It won't be an issue if you totally rely on `useProxy` to update the component.
