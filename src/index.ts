@@ -25,11 +25,11 @@ export const getEmitter = (obj: any): EventEmitter | undefined => {
   return Reflect.get(obj, emitterKey);
 };
 
-export function useProxy<T extends object>(target: T): T {
+export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   const eventEmitter = new EventEmitter();
 
   const connectChild = (propertyKey: PropertyKey, value: any) => {
-    const subProxy = getEmitter(value) ? value : useProxy(value);
+    const subProxy = getEmitter(value) ? value : useProxy(value)[0];
     const subEventEmitter = getEmitter(subProxy)!;
     subEventEmitter.on('event', (event: AccessEvent) => {
       eventEmitter.emit(
@@ -69,5 +69,5 @@ export function useProxy<T extends object>(target: T): T {
     }
   }
 
-  return proxy;
+  return [proxy, eventEmitter];
 }

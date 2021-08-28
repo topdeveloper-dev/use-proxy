@@ -2,8 +2,7 @@ import {useProxy, AccessEvent, getEmitter} from '../src';
 
 describe('index', () => {
   test('default', () => {
-    const proxy = useProxy({a: 'hello', b: {c: 'world'}});
-    const emitter = getEmitter(proxy)!;
+    const [proxy, emitter] = useProxy({a: 'hello', b: {c: 'world'}});
     const events: AccessEvent[] = [];
     emitter.on('event', (event: AccessEvent) => {
       events.push(event);
@@ -18,7 +17,7 @@ describe('index', () => {
   });
 
   test('subscribe to sub prop', () => {
-    const proxy = useProxy({a: 'hello', b: {c: 'world'}});
+    const [proxy] = useProxy({a: 'hello', b: {c: 'world'}});
     const emitter = getEmitter(proxy.b)!;
     const events: AccessEvent[] = [];
     emitter.on('event', (event: AccessEvent) => {
@@ -33,8 +32,7 @@ describe('index', () => {
     type A = {
       b?: {c: string};
     };
-    const proxy = useProxy<A>({});
-    const emitter = getEmitter(proxy)!;
+    const [proxy, emitter] = useProxy<A>({});
     const events: AccessEvent[] = [];
     emitter.on('event', (event: AccessEvent) => {
       events.push(event);
@@ -52,8 +50,7 @@ describe('index', () => {
     type A = {
       b?: {c: string};
     };
-    const proxy = useProxy<A>({});
-    const emitter = getEmitter(proxy)!;
+    const [proxy, emitter] = useProxy<A>({});
     const events: AccessEvent[] = [];
     emitter.on('event', (event: AccessEvent) => {
       events.push(event);

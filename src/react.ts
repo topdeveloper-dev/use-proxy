@@ -1,6 +1,5 @@
 import React from 'react';
 
-import {getEmitter} from '.';
 import {useProxy, AccessEvent} from '.';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
@@ -8,8 +7,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     super(props);
     const render = this.render.bind(this);
     this.render = () => {
-      const proxy = useProxy(props);
-      const emitter = getEmitter(proxy)!;
+      const [, emitter] = useProxy(props);
       const events: AccessEvent[] = [];
       emitter.on('event', (event: AccessEvent) => {
         events.push(event);

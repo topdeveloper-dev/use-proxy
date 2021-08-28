@@ -14,7 +14,7 @@ class Store {
   }
 }
 
-const store = useProxy(new Store());
+const [store] = useProxy(new Store());
 
 type AppProps = {
   store: Store;
