@@ -13,13 +13,9 @@ class Store {
 
 const [store] = useProxy(new Store());
 
-type AppProps = {
-  store: Store;
-};
-
 const renderHistory: number[] = [];
 
-class App extends Component<AppProps> {
+class App extends Component<{store: Store}> {
   render() {
     const store = this.props.store;
     renderHistory.push(store.count);
