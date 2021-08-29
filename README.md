@@ -11,8 +11,8 @@ Unlike `useState`, which only works with React functions; `useProxy` mainly work
 
 ## What's the value of `useProxy`?
 
-It allows you to maintain your app state in OOP style. 
-I am not saying that OOP style is the best practice for React development. 
+It allows you to maintain your app state in OOP style.  
+I am not saying that OOP style is the best practice for React development.  
 But if do want to code your React app in OOP style, you should give this library a try.
 
 It supports TypeScript very well. 
@@ -65,11 +65,8 @@ class App extends Component<{store: Store}> {
 import {useProxy} from '@tylerlong/use-proxy';
 import {ProxyEvent} from '@tylerlong/use-proxy/build/models';
 
-class Store {
-
-}
-
-const [store, emitter] = useProxy(new Store);
+class Store {}
+const [store, emitter] = useProxy(new Store());
 ```
 
 `emitter` is an `EventEmitter` which will emit events about read/write to store. You can subscribe to events:
