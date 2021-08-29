@@ -84,9 +84,10 @@ export const runAndMonitor = (
   f: Function
 ): [result: any, newEmitter: EventEmitter] => {
   const events: AccessEvent[] = [];
-  emitter.on('event', (event: AccessEvent) => events.push(event));
+  const callback = (event: AccessEvent) => events.push(event);
+  emitter.on('event', callback);
   const result = f();
-  emitter.removeAllListeners();
+  emitter.off('event', callback);
   const getPaths = [
     ...new Set(
       events
