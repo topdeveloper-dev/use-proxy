@@ -1,4 +1,5 @@
-import {useProxy, AccessEvent} from '../src';
+import {useProxy} from '../src';
+import {AccessEvent} from '../src/models';
 
 describe('getter', () => {
   test('getter', () => {

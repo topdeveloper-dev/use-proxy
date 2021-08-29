@@ -1,18 +1,7 @@
 import {EventEmitter} from 'events';
+import {AccessEvent, Child} from './models';
 
 const emitterKey: PropertyKey = '__eventEmitter__';
-
-export class AccessEvent {
-  name: 'get' | 'set';
-  paths: PropertyKey[];
-  constructor(name: 'get' | 'set', paths: PropertyKey[]) {
-    this.name = name;
-    this.paths = paths;
-  }
-  pathString() {
-    return this.paths.join('+');
-  }
-}
 
 export const canProxy = (obj: any) => {
   return typeof obj === 'object' && obj !== null;
@@ -26,7 +15,13 @@ export const getEmitter = (obj: any): EventEmitter | undefined => {
 };
 
 export function useProxy<T extends object>(target: T): [T, EventEmitter] {
+  // const emitter = getEmitter(target);
+  // if (emitter) {
+  //   return [target, emitter];
+  // }
+
   const eventEmitter = new EventEmitter();
+  // const children: {[key: PropertyKey]: Child} = {};
 
   const connectChild = (
     propertyKey: PropertyKey,
