@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 import {AccessEvent, Children} from './models';
 
-const emitterKey = '__emitter__';
+const emitterKey = '~`!@#$%^&*()_+=-'; // make it special so no conflict with user defined key names
 
 export const canProxy = (obj: any) => typeof obj === 'object' && obj !== null;
 
@@ -15,13 +15,18 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
     return [target, oldEmitter!];
   }
 
+  // two variables belongs to the scope of useProxy (the proxy)
   const emitter = new EventEmitter();
   const children = new Children();
 
-  const connectChild = (path: string, value: any, receiver?: any) => {
+  // make child a proxy and add it to children
+  const proxyChild = (path: string, value: any) => {
+    if (!canProxy(value)) {
+      return value;
+    }
     const [childProxy, childEmitter] = useProxy(value);
-    Reflect.set(target, path, childProxy, receiver);
     children.addChild(path, childEmitter, emitter);
+    return childProxy;
   };
 
   const proxy = new Proxy(target, {
@@ -42,11 +47,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       }
       // remove old child in case there is one
       children.removeChild(path);
-      if (canProxy(value)) {
-        connectChild(path, value, receiver);
-      } else {
-        Reflect.set(target, path, value, receiver);
-      }
+      Reflect.set(target, path, proxyChild(path, value), receiver);
       emitter.emit('event', new AccessEvent('set', [path]));
       return true;
     },
@@ -55,9 +56,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   // first time init
   for (const path of Object.keys(target)) {
     const value = Reflect.get(target, path);
-    if (canProxy(value)) {
-      connectChild(path, value, target);
-    }
+    Reflect.set(target, path, proxyChild(path, value), target);
   }
 
   return [proxy, emitter];
