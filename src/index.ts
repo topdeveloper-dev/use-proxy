@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 import {AccessEvent, Child} from './models';
 
-const emitterKey: PropertyKey = '__emitter__';
+const emitterKey = '__emitter__';
 
 export const canProxy = (obj: any) => {
   return typeof obj === 'object' && obj !== null;
@@ -15,32 +15,23 @@ export const getEmitter = (obj: any): EventEmitter | undefined => {
 };
 
 export function useProxy<T extends object>(target: T): [T, EventEmitter] {
-  // const emitter = getEmitter(target);
-  // if (emitter) {
-  //   return [target, emitter];
-  // }
+  // return if the object is already a proxy
+  const oldEmitter = getEmitter(target);
+  if (oldEmitter) {
+    return [target, oldEmitter!];
+  }
 
   const emitter = new EventEmitter();
-  // const children: {[key: PropertyKey]: Child} = {};
+  const children: {[key: string]: Child} = {};
 
-  const connectChild = (
-    propertyKey: PropertyKey,
-    value: any,
-    receiver?: any
-  ) => {
-    const subProxy = getEmitter(value) ? value : useProxy(value)[0];
-    const subEventEmitter = getEmitter(subProxy)!;
-    subEventEmitter.on('event', (event: AccessEvent) => {
-      emitter.emit(
-        'event',
-        new AccessEvent(event.name, [propertyKey, ...event.paths])
-      );
-    });
-    Reflect.set(target, propertyKey, subProxy, receiver);
+  const connectChild = (propertyKey: string, value: any, receiver?: any) => {
+    const [childProxy, childEmitter] = useProxy(value);
+    Reflect.set(target, propertyKey, childProxy, receiver);
+    children[propertyKey] = new Child(propertyKey, childEmitter, emitter);
   };
 
   const proxy = new Proxy(target, {
-    get: (target: T, propertyKey: PropertyKey, receiver?: any) => {
+    get: (target: T, propertyKey: string, receiver?: any) => {
       if (propertyKey === emitterKey) {
         return emitter;
       }
@@ -52,7 +43,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
     },
     set: (
       target: T,
-      propertyKey: PropertyKey,
+      propertyKey: string,
       value: any,
       receiver?: any
     ): boolean => {
@@ -61,7 +52,12 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
         return true;
       }
       // disconnect old value parent
-      getEmitter(oldValue)?.removeAllListeners();
+      const child = children[propertyKey];
+      if (child) {
+        child.dispose();
+        delete children[propertyKey];
+      }
+
       if (canProxy(value)) {
         connectChild(propertyKey, value, receiver);
       } else {

@@ -22,10 +22,10 @@ export class Child {
   ) {
     this.emitter = emitter;
     this.callback = (event: AccessEvent) => {
-      parentEmitter.emit('event', {
-        ...event,
-        paths: [propertyKey, ...event.paths],
-      });
+      parentEmitter.emit(
+        'event',
+        new AccessEvent(event.name, [propertyKey, ...event.paths])
+      );
     };
     this.emitter.on('event', this.callback);
   }
