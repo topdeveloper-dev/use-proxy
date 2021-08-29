@@ -63,8 +63,6 @@ describe('index', () => {
     expect(events).toEqual([
       {name: 'set', paths: ['b']},
       {name: 'get', paths: ['b']},
-      {name: 'set', paths: ['b']},
-      {name: 'set', paths: ['b']},
       {name: 'get', paths: ['b']},
       {name: 'set', paths: ['b', 'c']},
     ]);

@@ -61,8 +61,12 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       value: any,
       receiver?: any
     ): boolean => {
+      const oldValue = Reflect.get(target, propertyKey);
+      if (value === oldValue) {
+        return true;
+      }
       // disconnect old value parent
-      getEmitter(Reflect.get(target, propertyKey))?.removeAllListeners();
+      getEmitter(oldValue)?.removeAllListeners();
       if (canProxy(value)) {
         connectChild(propertyKey, value, receiver);
       } else {
