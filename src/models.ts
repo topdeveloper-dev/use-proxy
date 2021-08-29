@@ -3,10 +3,12 @@ import {EventEmitter} from 'stream';
 export class AccessEvent {
   name: 'get' | 'set';
   paths: string[];
+
   constructor(name: 'get' | 'set', paths: string[]) {
     this.name = name;
     this.paths = paths;
   }
+
   pathString() {
     return this.paths.join('+');
   }
@@ -43,10 +45,6 @@ export class Children {
     this.removeChild(path);
     const child = new Child(path, emitter, parentEmitter);
     this.children[path] = child;
-  }
-
-  getChild(path: string) {
-    return this.children[path];
   }
 
   removeChild(path: string) {

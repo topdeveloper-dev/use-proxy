@@ -3,12 +3,18 @@ import React from 'react';
 import {EventEmitter} from 'events';
 
 import {useProxy, runAndMonitor} from '.';
+import {AccessEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   emitter?: EventEmitter;
+  listener?: (event: AccessEvent) => void;
+
   dispose() {
-    this.emitter?.removeAllListeners();
+    if (this.emitter && this.listener) {
+      this.emitter.off('event', this.listener);
+    }
     delete this.emitter;
+    delete this.listener;
   }
 
   constructor(props: Readonly<P>) {
@@ -19,11 +25,14 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     this.render = () => {
       this.dispose();
       [, this.emitter] = useProxy(props);
-      const [result, newEmitter] = runAndMonitor(this.emitter, render);
-      newEmitter.once('event', () => {
-        this.dispose();
-        this.forceUpdate();
-      });
+      const [result, filter] = runAndMonitor(this.emitter, render);
+      this.listener = (event: AccessEvent) => {
+        if (filter(event)) {
+          this.dispose();
+          this.forceUpdate();
+        }
+      };
+      this.emitter.on('event', this.listener);
       return result;
     };
 
@@ -39,8 +48,8 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     }
 
     // rewrite shouldComponentUpdate
-    this.shouldComponentUpdate = () => {
-      return false;
-    };
+    if (!this.shouldComponentUpdate) {
+      this.shouldComponentUpdate = () => false;
+    }
   }
 }
