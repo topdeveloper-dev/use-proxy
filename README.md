@@ -12,9 +12,10 @@ Unlike `useState`, which only works with React functions; `useProxy` mainly work
 ## What's the value of `useProxy`?
 
 It allows you to maintain your app state in OOP style. 
-
 I am not saying that OOP style is the best practice for React development. 
-But React Hooks' functional style is hardly my cup of tea.
+But if do want to code your React app in OOP style, you should give this library a try.
+
+It supports TypeScript very well. 
 
 
 ## Demo application
@@ -60,6 +61,24 @@ class App extends Component<{store: Store}> {
 
 ## Event Emitter
 
+```ts
+import {useProxy} from '@tylerlong/use-proxy';
+import {ProxyEvent} from '@tylerlong/use-proxy/build/models';
+
+class Store {
+
+}
+
+const [store, emitter] = useProxy(new Store);
+```
+
+`emitter` is an `EventEmitter` which will emit events about read/write to store. You can subscribe to events:
+
+```ts
+emitter.on('event', (event: ProxyEvent) => {
+  // do something with event
+});
+```
 
 
 ## Utility methods
@@ -81,23 +100,10 @@ The signature of `runAgain` is
 For a sample usage of `runAgain`, please check [./src/react.ts](./src/react.ts).
 
 
-## For maintainers
-
-### How to publish
-
-```
-npm publish --access=public
-```
-
-And by experiment I find that `--access=public` is only needed when the first time you release this library to https://www.npmjs.com/.
-
-Subsequent releases can omit `--access=public` and the release is still public.
-
-
 ## Known issue
 
 - It only monitors `get` and `set` of properties. It doesn't monitor `delete`, `has` and `keys`. Because in 99.9% cases, `get` & `set` are sufficient to monitor and manage data.
-- The react integration rewrites `shouldComponentUpdate` to always return `false`. It won't be an issue if you totally rely on `useProxy` to update the component.
+- You cannot proxy some built-in objects, such as `Set` & `Map`.
 
 
 ## Todo
@@ -105,7 +111,6 @@ Subsequent releases can omit `--access=public` and the release is still public.
 - Add logging, easily turn on and off
 - cache data for getter functions, just like what I did in SubX project
 - Add `autoRun` method so that user could easily save store to disk
-- test `new Set()`
 
 
 ## Notes
