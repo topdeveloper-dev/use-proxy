@@ -80,10 +80,10 @@ export const runAndMonitor = (
   f: Function
 ): [result: any, filter: (event: ProxyEvent) => boolean] => {
   const events: ProxyEvent[] = [];
-  const callback = (event: ProxyEvent) => events.push(event);
-  emitter.on('event', callback);
+  const listener = (event: ProxyEvent) => events.push(event);
+  emitter.on('event', listener);
   const result = f();
-  emitter.off('event', callback);
+  emitter.off('event', listener);
   const getPaths = [
     ...new Set(
       events

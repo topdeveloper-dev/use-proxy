@@ -16,7 +16,7 @@ export class ProxyEvent {
 
 export class Child {
   emitter: EventEmitter;
-  callback: (event: ProxyEvent) => void;
+  listener: (event: ProxyEvent) => void;
 
   constructor(
     path: string,
@@ -24,17 +24,17 @@ export class Child {
     parentEmitter: EventEmitter
   ) {
     this.emitter = emitter;
-    this.callback = (event: ProxyEvent) => {
+    this.listener = (event: ProxyEvent) => {
       parentEmitter.emit(
         'event',
         new ProxyEvent(event.name, [path, ...event.paths])
       );
     };
-    this.emitter.on('event', this.callback);
+    this.emitter.on('event', this.listener);
   }
 
   release() {
-    this.emitter.off('event', this.callback);
+    this.emitter.off('event', this.listener);
   }
 }
 
