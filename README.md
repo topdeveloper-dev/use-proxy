@@ -92,7 +92,7 @@ The signature of `runAgain` is
 ```
 
 - `emitter` is generated from `useProxy` method: `const [proxy, emitter] = useProxy(store)`.
-- `f` is a function which reads the `proxy`.
+- `f` is a function which reads `proxy`.
 - `result` is the result of `f()`.
 - `shouldRunAgain` is a function which returns `true` if an `event` from `emitter` will cause `f()` to have a different result.
   - when it returns true, most likely it's time to **run** `f()` **again**.
@@ -112,10 +112,12 @@ The signature of `autoRun` is
 ```
 
 - `emitter` is generated from `useProxy` method: `const [proxy, emitter] = useProxy(store)`.
-- `f` is a function which reads the `proxy`.
+- `f` is a function which reads `proxy`.
 
 When you invoke `autoRun(emitter, f)`, `f()` is invoked immediately.
-`f()` will be invoked automatically if there are events from `emitter` which change the result of `f()`.
+`f()` will be invoked automatically afterwards if there are events from `emitter` which change the result of `f()`.
+
+You may [debounce](https://lodash.com/docs/4.17.15#debounce) `f()`.
 
 For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/autoRun.spec.ts).
 
@@ -130,7 +132,6 @@ For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/au
 
 - Add logging, easily turn on and off
 - cache data for getter functions, just like what I did in SubX project
-- Debounce `autoRun`
 
 
 ## Notes
