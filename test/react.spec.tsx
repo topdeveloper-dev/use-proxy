@@ -2,7 +2,7 @@ import TestRenderer from 'react-test-renderer';
 import React from 'react';
 
 import {Component} from '../src/react';
-import {useProxy} from '../src';
+import {getEmitter, useProxy} from '../src';
 
 class Store {
   count = 0;
@@ -34,13 +34,18 @@ class App extends Component<AppProps> {
 
 describe('React', () => {
   test('default', async () => {
+    expect(getEmitter(store)!.listenerCount('event')).toBe(0);
     const renderer = TestRenderer.create(<App store={store} />);
+    expect(getEmitter(store)!.listenerCount('event')).toBe(1);
     const minusButton = renderer.root.find(
       el => el.type === 'button' && el.children && el.children[0] === '+'
     );
     minusButton.props.onClick();
+    expect(getEmitter(store)!.listenerCount('event')).toBe(1);
     minusButton.props.onClick();
+    expect(getEmitter(store)!.listenerCount('event')).toBe(1);
     minusButton.props.onClick();
+    expect(getEmitter(store)!.listenerCount('event')).toBe(1);
     const span = renderer.root.find(el => el.type === 'span');
     expect(store.count).toEqual(parseInt(span.children[0] as string));
     expect(store.count).toBe(3);

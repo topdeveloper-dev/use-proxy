@@ -33,7 +33,7 @@ export class Child {
     this.emitter.on('event', this.callback);
   }
 
-  dispose() {
+  release() {
     this.emitter.off('event', this.callback);
   }
 }
@@ -42,16 +42,22 @@ export class Children {
   children: {[path: string]: Child} = {};
 
   addChild(path: string, emitter: EventEmitter, parentEmitter: EventEmitter) {
-    this.removeChild(path);
+    this.releaseChild(path);
     const child = new Child(path, emitter, parentEmitter);
     this.children[path] = child;
   }
 
-  removeChild(path: string) {
+  releaseChild(path: string) {
     const child = this.children[path];
     if (child) {
-      child.dispose();
+      child.release();
       delete this.children[path];
+    }
+  }
+
+  releasesAll() {
+    for (const path of Object.keys(this.children)) {
+      this.releaseChild(path);
     }
   }
 }

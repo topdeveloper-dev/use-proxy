@@ -1,12 +1,21 @@
 import {EventEmitter} from 'events';
 import {AccessEvent, Children} from './models';
 
-const emitterKey = '~`!@#$%^&*()_+=-'; // make it special so no conflict with user defined key names
+// make value special so no conflict with user defined key names
+const emitterKey = '~`!@#$%^&*()_+=-';
+const childrenKey = '&*()_+=-~`!@#$%^';
 
 export const canProxy = (obj: any) => typeof obj === 'object' && obj !== null;
 
 export const getEmitter = (obj: any): EventEmitter | undefined =>
   canProxy(obj) ? Reflect.get(obj, emitterKey) : undefined;
+
+// release all children
+export const releaseChildren = (obj: any): void => {
+  if (canProxy(obj)) {
+    (Reflect.get(obj, childrenKey) as Children)?.releasesAll();
+  }
+};
 
 export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   // return if the object is already a proxy
@@ -34,6 +43,9 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       if (path === emitterKey) {
         return emitter;
       }
+      if (path === childrenKey) {
+        return children;
+      }
       const value = Reflect.get(target, path, receiver);
       if (typeof value !== 'function') {
         emitter.emit('event', new AccessEvent('get', [path]));
@@ -47,7 +59,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
         return true;
       }
       // remove old child in case there is one
-      children.removeChild(path);
+      children.releaseChild(path);
       Reflect.set(target, path, proxyChild(path, value), receiver);
       emitter.emit('event', new AccessEvent('set', [path]));
       return true;

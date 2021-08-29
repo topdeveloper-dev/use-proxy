@@ -2,19 +2,22 @@
 import React from 'react';
 import {EventEmitter} from 'events';
 
-import {useProxy, runAndMonitor} from '.';
+import {useProxy, runAndMonitor, releaseChildren} from '.';
 import {AccessEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   emitter?: EventEmitter;
   listener?: (event: AccessEvent) => void;
+  propsProxy?: P;
 
   dispose() {
     if (this.emitter && this.listener) {
       this.emitter.off('event', this.listener);
     }
+    releaseChildren(this.propsProxy);
     delete this.emitter;
     delete this.listener;
+    delete this.propsProxy;
   }
 
   constructor(props: Readonly<P>) {
@@ -23,8 +26,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     // rewrite render()
     const render = this.render.bind(this);
     this.render = () => {
-      this.dispose();
-      [, this.emitter] = useProxy(props);
+      [this.propsProxy, this.emitter] = useProxy(props);
       const [result, filter] = runAndMonitor(this.emitter, render);
       this.listener = (event: AccessEvent) => {
         if (filter(event)) {
