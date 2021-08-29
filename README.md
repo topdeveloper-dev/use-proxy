@@ -61,14 +61,14 @@ class App extends Component<AppProps> {
 The signature of `runAndMonitor` is
 
 ```ts
-(emitter: EventEmitter, f: Function): [result: any, newEmitter: EventEmitter]
+(emitter: EventEmitter, f: Function): [result: any, filter: (event: AccessEvent) => boolean]
 ```
 
 - `emitter` is generated from `useProxy` method: `const[, emitter] = useProxy(state)`
 - `f` is the function to execute
 - `result` is the result of `f()`
-- `newEmitter` is a new EventEmitter which emits events whenever data changes in proxy which will affect the result of `f()`
-  - when you get an event from `newEmitter`, most likely it means it's time to run `f()` again
+- `filter` is a function which returns `true` if an `event` from `emitter` will cause `f()` to have a different result.
+  - when it returns true, most likely it's time to run `f()` again
 
 For a sample usage of `runAndMonitor`, please check `./src/react.ts`.
 
@@ -97,6 +97,7 @@ Subsequent releases can omit `--access=public` and the release is still public.
 - Add logging, easily turn on and off
 - cache data for getter functions, just like what I did in SubX project
 - Add `autoRun` method so that user could easily save store to disk
+- naming: `runAndMonitor`, `filter`
 
 
 ## Notes
