@@ -1,6 +1,6 @@
 # useProxy
 
-The name `useProxy` was inspired by React [useState](https://reactjs.org/docs/hooks-state.html).
+The name `useProxy` was inspired by React [useState](https://reactjs.org/docs/hooks-intro.html).
 
 Just like `useState`, it is mainly designed to work with React applications. 
 
@@ -92,13 +92,13 @@ Subsequent releases can omit `--access=public` and the release is still public.
 - The react integration rewrites `shouldComponentUpdate` to always return `false`. It won't be an issue if you totally rely on `useProxy` to update the component.
 
 
-
 ## Todo
 
 - Add logging, easily turn on and off
-- “MaxListenersExceededWarning: Possible EventEmitter memory leak detected”
-  - Fix it!
-  - no more removeAllListeners, use parent/children to track precisely
 - cache data for getter functions, just like what I did in SubX project
-- Replace type with class
-- every `emitter.on` must have a corresponding `emitter.off`.
+- Add `autoRun` method so that user could easily save store to disk
+
+
+## Notes
+
+- every `emitter.on()` must have a corresponding `emitter.off()`. Otherwise there will be memory leak.
