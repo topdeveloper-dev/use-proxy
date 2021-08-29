@@ -78,7 +78,7 @@ The signature of `runAndMonitor` is
 - `filter` is a function which returns `true` if an `event` from `emitter` will cause `f()` to have a different result.
   - when it returns true, most likely it's time to run `f()` again
 
-For a sample usage of `runAndMonitor`, please check `./src/react.ts`.
+For a sample usage of `runAndMonitor`, please check [./src/react.ts](./src/react.ts).
 
 
 ## For maintainers
