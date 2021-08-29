@@ -2,8 +2,8 @@ import {EventEmitter} from 'stream';
 
 export class AccessEvent {
   name: 'get' | 'set';
-  paths: PropertyKey[];
-  constructor(name: 'get' | 'set', paths: PropertyKey[]) {
+  paths: string[];
+  constructor(name: 'get' | 'set', paths: string[]) {
     this.name = name;
     this.paths = paths;
   }
@@ -16,7 +16,7 @@ export class Child {
   emitter: EventEmitter;
   callback: (event: AccessEvent) => void;
   constructor(
-    propertyKey: PropertyKey,
+    path: string,
     emitter: EventEmitter,
     parentEmitter: EventEmitter
   ) {
@@ -24,7 +24,7 @@ export class Child {
     this.callback = (event: AccessEvent) => {
       parentEmitter.emit(
         'event',
-        new AccessEvent(event.name, [propertyKey, ...event.paths])
+        new AccessEvent(event.name, [path, ...event.paths])
       );
     };
     this.emitter.on('event', this.callback);

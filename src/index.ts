@@ -24,55 +24,50 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   const emitter = new EventEmitter();
   const children: {[key: string]: Child} = {};
 
-  const connectChild = (propertyKey: string, value: any, receiver?: any) => {
+  const connectChild = (path: string, value: any, receiver?: any) => {
     const [childProxy, childEmitter] = useProxy(value);
-    Reflect.set(target, propertyKey, childProxy, receiver);
-    children[propertyKey] = new Child(propertyKey, childEmitter, emitter);
+    Reflect.set(target, path, childProxy, receiver);
+    children[path] = new Child(path, childEmitter, emitter);
   };
 
   const proxy = new Proxy(target, {
-    get: (target: T, propertyKey: string, receiver?: any) => {
-      if (propertyKey === emitterKey) {
+    get: (target: T, path: string, receiver?: any) => {
+      if (path === emitterKey) {
         return emitter;
       }
-      const value = Reflect.get(target, propertyKey, receiver);
+      const value = Reflect.get(target, path, receiver);
       if (typeof value !== 'function') {
-        emitter.emit('event', new AccessEvent('get', [propertyKey]));
+        emitter.emit('event', new AccessEvent('get', [path]));
       }
       return value;
     },
-    set: (
-      target: T,
-      propertyKey: string,
-      value: any,
-      receiver?: any
-    ): boolean => {
-      const oldValue = Reflect.get(target, propertyKey);
+    set: (target: T, path: string, value: any, receiver?: any): boolean => {
+      const oldValue = Reflect.get(target, path);
       if (value === oldValue) {
         return true;
       }
       // disconnect old value parent
-      const child = children[propertyKey];
+      const child = children[path];
       if (child) {
         child.dispose();
-        delete children[propertyKey];
+        delete children[path];
       }
 
       if (canProxy(value)) {
-        connectChild(propertyKey, value, receiver);
+        connectChild(path, value, receiver);
       } else {
-        Reflect.set(target, propertyKey, value, receiver);
+        Reflect.set(target, path, value, receiver);
       }
-      emitter.emit('event', new AccessEvent('set', [propertyKey]));
+      emitter.emit('event', new AccessEvent('set', [path]));
       return true;
     },
   });
 
   // first time init
-  for (const propertyKey of Object.keys(target)) {
-    const value = Reflect.get(target, propertyKey);
+  for (const path of Object.keys(target)) {
+    const value = Reflect.get(target, path);
     if (canProxy(value)) {
-      connectChild(propertyKey, value, target);
+      connectChild(path, value, target);
     }
   }
 
