@@ -103,3 +103,14 @@ export const runAgain = (
   };
   return [result, shouldRunAgain];
 };
+
+export const autoRun = (emitter: EventEmitter, f: Function): void => {
+  const [, shouldRunAgain] = runAgain(emitter, f);
+  const listener = (event: ProxyEvent) => {
+    if (shouldRunAgain(event)) {
+      emitter.off('event', listener);
+      autoRun(emitter, f);
+    }
+  };
+  emitter.on('event', listener);
+};

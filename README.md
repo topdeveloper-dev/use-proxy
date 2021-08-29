@@ -92,12 +92,32 @@ The signature of `runAgain` is
 ```
 
 - `emitter` is generated from `useProxy` method: `const [proxy, emitter] = useProxy(store)`.
-- `f` is a function which reads/writes the `proxy`.
+- `f` is a function which reads the `proxy`.
 - `result` is the result of `f()`.
 - `shouldRunAgain` is a function which returns `true` if an `event` from `emitter` will cause `f()` to have a different result.
   - when it returns true, most likely it's time to **run** `f()` **again**.
 
+When you invoke `runAgain`, `f()` is invoked immediately. 
+You can subscribe to `emitter` and filter the events using `shouldRunAgain` to get the `event` to run `f()` again.
+
 For a sample usage of `runAgain`, please check [./src/react.ts](./src/react.ts).
+
+
+### `autoRun`
+
+The signature of `autoRun` is
+
+```ts
+(emitter: EventEmitter, f: Function): void
+```
+
+- `emitter` is generated from `useProxy` method: `const [proxy, emitter] = useProxy(store)`.
+- `f` is a function which reads the `proxy`.
+
+When you invoke `autoRun(emitter, f)`, `f()` is invoked immediately.
+`f()` will be invoked automatically if there are events from `emitter` which change the result of `f()`.
+
+For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/autoRun.spec.ts).
 
 
 ## Known issue
@@ -110,7 +130,7 @@ For a sample usage of `runAgain`, please check [./src/react.ts](./src/react.ts).
 
 - Add logging, easily turn on and off
 - cache data for getter functions, just like what I did in SubX project
-- Add `autoRun` method so that user could easily save store to disk
+- Debounce `autoRun`
 
 
 ## Notes
