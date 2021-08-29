@@ -41,8 +41,9 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       return value;
     },
     set: (target: T, path: string, value: any, receiver?: any): boolean => {
-      const oldValue = Reflect.get(target, path);
-      if (value === oldValue) {
+      // no assign object to itself, doesn't make sense
+      // array.length assign oldValue === value, strange
+      if (canProxy(value) && value === Reflect.get(target, path)) {
         return true;
       }
       // remove old child in case there is one
