@@ -100,3 +100,4 @@ Subsequent releases can omit `--access=public` and the release is still public.
   - Fix it!
   - no more removeAllListeners, use parent/children to track precisely
 - cache data for getter functions, just like what I did in SubX project
+- Replace type with class

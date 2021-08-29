@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 import {AccessEvent, Child} from './models';
 
-const emitterKey: PropertyKey = '__eventEmitter__';
+const emitterKey: PropertyKey = '__emitter__';
 
 export const canProxy = (obj: any) => {
   return typeof obj === 'object' && obj !== null;
@@ -20,7 +20,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   //   return [target, emitter];
   // }
 
-  const eventEmitter = new EventEmitter();
+  const emitter = new EventEmitter();
   // const children: {[key: PropertyKey]: Child} = {};
 
   const connectChild = (
@@ -31,7 +31,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
     const subProxy = getEmitter(value) ? value : useProxy(value)[0];
     const subEventEmitter = getEmitter(subProxy)!;
     subEventEmitter.on('event', (event: AccessEvent) => {
-      eventEmitter.emit(
+      emitter.emit(
         'event',
         new AccessEvent(event.name, [propertyKey, ...event.paths])
       );
@@ -42,11 +42,11 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   const proxy = new Proxy(target, {
     get: (target: T, propertyKey: PropertyKey, receiver?: any) => {
       if (propertyKey === emitterKey) {
-        return eventEmitter;
+        return emitter;
       }
       const value = Reflect.get(target, propertyKey, receiver);
       if (typeof value !== 'function') {
-        eventEmitter.emit('event', new AccessEvent('get', [propertyKey]));
+        emitter.emit('event', new AccessEvent('get', [propertyKey]));
       }
       return value;
     },
@@ -67,7 +67,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       } else {
         Reflect.set(target, propertyKey, value, receiver);
       }
-      eventEmitter.emit('event', new AccessEvent('set', [propertyKey]));
+      emitter.emit('event', new AccessEvent('set', [propertyKey]));
       return true;
     },
   });
@@ -80,7 +80,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
     }
   }
 
-  return [proxy, eventEmitter];
+  return [proxy, emitter];
 }
 
 export const runAndMonitor = (
