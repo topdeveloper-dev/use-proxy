@@ -3,16 +3,10 @@ import {AccessEvent, Children} from './models';
 
 const emitterKey = '__emitter__';
 
-export const canProxy = (obj: any) => {
-  return typeof obj === 'object' && obj !== null;
-};
+export const canProxy = (obj: any) => typeof obj === 'object' && obj !== null;
 
-export const getEmitter = (obj: any): EventEmitter | undefined => {
-  if (!canProxy(obj)) {
-    return undefined;
-  }
-  return Reflect.get(obj, emitterKey);
-};
+export const getEmitter = (obj: any): EventEmitter | undefined =>
+  canProxy(obj) ? Reflect.get(obj, emitterKey) : undefined;
 
 export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   // return if the object is already a proxy
@@ -46,10 +40,8 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       if (value === oldValue) {
         return true;
       }
-
-      // remove old child
+      // remove old child in case there is one
       children.removeChild(path);
-
       if (canProxy(value)) {
         connectChild(path, value, receiver);
       } else {
