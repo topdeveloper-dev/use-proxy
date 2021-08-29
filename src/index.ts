@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import {AccessEvent, Child} from './models';
+import {AccessEvent, Children} from './models';
 
 const emitterKey = '__emitter__';
 
@@ -22,12 +22,12 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   }
 
   const emitter = new EventEmitter();
-  const children: {[key: string]: Child} = {};
+  const children = new Children();
 
   const connectChild = (path: string, value: any, receiver?: any) => {
     const [childProxy, childEmitter] = useProxy(value);
     Reflect.set(target, path, childProxy, receiver);
-    children[path] = new Child(path, childEmitter, emitter);
+    children.addChild(path, childEmitter, emitter);
   };
 
   const proxy = new Proxy(target, {
@@ -46,12 +46,9 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       if (value === oldValue) {
         return true;
       }
-      // disconnect old value parent
-      const child = children[path];
-      if (child) {
-        child.dispose();
-        delete children[path];
-      }
+
+      // remove old child
+      children.removeChild(path);
 
       if (canProxy(value)) {
         connectChild(path, value, receiver);

@@ -15,6 +15,7 @@ export class AccessEvent {
 export class Child {
   emitter: EventEmitter;
   callback: (event: AccessEvent) => void;
+
   constructor(
     path: string,
     emitter: EventEmitter,
@@ -32,5 +33,27 @@ export class Child {
 
   dispose() {
     this.emitter.off('event', this.callback);
+  }
+}
+
+export class Children {
+  children: {[path: string]: Child} = {};
+
+  addChild(path: string, emitter: EventEmitter, parentEmitter: EventEmitter) {
+    this.removeChild(path);
+    const child = new Child(path, emitter, parentEmitter);
+    this.children[path] = child;
+  }
+
+  getChild(path: string) {
+    return this.children[path];
+  }
+
+  removeChild(path: string) {
+    const child = this.children[path];
+    if (child) {
+      child.dispose();
+      delete this.children[path];
+    }
   }
 }
