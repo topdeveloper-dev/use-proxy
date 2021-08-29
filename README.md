@@ -58,6 +58,10 @@ class App extends Component<{store: Store}> {
 }
 ```
 
+## Event Emitter
+
+
+
 ## Utility methods
 
 ### `runAndMonitor`
@@ -65,7 +69,7 @@ class App extends Component<{store: Store}> {
 The signature of `runAndMonitor` is
 
 ```ts
-(emitter: EventEmitter, f: Function): [result: any, filter: (event: AccessEvent) => boolean]
+(emitter: EventEmitter, f: Function): [result: any, filter: (event: ProxyEvent) => boolean]
 ```
 
 - `emitter` is generated from `useProxy` method: `const[, emitter] = useProxy(state)`
@@ -102,6 +106,7 @@ Subsequent releases can omit `--access=public` and the release is still public.
 - cache data for getter functions, just like what I did in SubX project
 - Add `autoRun` method so that user could easily save store to disk
 - naming: `runAndMonitor`, `filter`
+- test `new Set()`
 
 
 ## Notes

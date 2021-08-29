@@ -1,5 +1,5 @@
 import {useProxy} from '../src';
-import {AccessEvent} from '../src/models';
+import {ProxyEvent} from '../src/models';
 
 describe('getter', () => {
   test('getter', () => {
@@ -9,8 +9,8 @@ describe('getter', () => {
         return !this.visibility;
       },
     });
-    const events: AccessEvent[] = [];
-    emitter.on('event', (event: AccessEvent) => {
+    const events: ProxyEvent[] = [];
+    emitter.on('event', (event: ProxyEvent) => {
       events.push(event);
     });
     if (proxy.visibleTodos) {
@@ -28,8 +28,8 @@ describe('getter', () => {
         return !this.visibility;
       },
     });
-    const events: AccessEvent[] = [];
-    emitter.on('event', (event: AccessEvent) => {
+    const events: ProxyEvent[] = [];
+    emitter.on('event', (event: ProxyEvent) => {
       events.push(event);
     });
     if (proxy.visibleTodos()) {

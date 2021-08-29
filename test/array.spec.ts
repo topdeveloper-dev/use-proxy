@@ -1,5 +1,5 @@
 import {useProxy} from '../src';
-import {AccessEvent} from '../src/models';
+import {ProxyEvent} from '../src/models';
 
 describe('array', () => {
   test('proxy set length', () => {
@@ -26,8 +26,8 @@ describe('array', () => {
       todos: string[] = [];
     }
     const [proxy, emitter] = useProxy(new Store());
-    const events: AccessEvent[] = [];
-    emitter.on('event', (event: AccessEvent) => {
+    const events: ProxyEvent[] = [];
+    emitter.on('event', (event: ProxyEvent) => {
       if (event.name === 'set') {
         events.push(event);
       }

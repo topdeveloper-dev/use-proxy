@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import {AccessEvent, Children} from './models';
+import {ProxyEvent, Children} from './models';
 
 // make value special so no conflict with user defined key names
 const emitterKey = '~`!@#$%^&*()_+=-';
@@ -48,7 +48,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       }
       const value = Reflect.get(target, path, receiver);
       if (typeof value !== 'function') {
-        emitter.emit('event', new AccessEvent('get', [path]));
+        emitter.emit('event', new ProxyEvent('get', [path]));
       }
       return value;
     },
@@ -61,7 +61,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       // remove old child in case there is one
       children.releaseChild(path);
       Reflect.set(target, path, proxyChild(path, value), receiver);
-      emitter.emit('event', new AccessEvent('set', [path]));
+      emitter.emit('event', new ProxyEvent('set', [path]));
       return true;
     },
   });
@@ -78,9 +78,9 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
 export const runAndMonitor = (
   emitter: EventEmitter,
   f: Function
-): [result: any, filter: (event: AccessEvent) => boolean] => {
-  const events: AccessEvent[] = [];
-  const callback = (event: AccessEvent) => events.push(event);
+): [result: any, filter: (event: ProxyEvent) => boolean] => {
+  const events: ProxyEvent[] = [];
+  const callback = (event: ProxyEvent) => events.push(event);
   emitter.on('event', callback);
   const result = f();
   emitter.off('event', callback);
@@ -91,7 +91,7 @@ export const runAndMonitor = (
         .map(event => event.pathString())
     ),
   ];
-  const filter = (event: AccessEvent): boolean => {
+  const filter = (event: ProxyEvent): boolean => {
     if (event.name === 'set') {
       const setPath = event.pathString();
       if (getPaths.some(getPath => getPath.startsWith(setPath))) {

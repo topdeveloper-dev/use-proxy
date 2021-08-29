@@ -1,6 +1,6 @@
 import {EventEmitter} from 'stream';
 
-export class AccessEvent {
+export class ProxyEvent {
   name: 'get' | 'set';
   paths: string[];
 
@@ -16,7 +16,7 @@ export class AccessEvent {
 
 export class Child {
   emitter: EventEmitter;
-  callback: (event: AccessEvent) => void;
+  callback: (event: ProxyEvent) => void;
 
   constructor(
     path: string,
@@ -24,10 +24,10 @@ export class Child {
     parentEmitter: EventEmitter
   ) {
     this.emitter = emitter;
-    this.callback = (event: AccessEvent) => {
+    this.callback = (event: ProxyEvent) => {
       parentEmitter.emit(
         'event',
-        new AccessEvent(event.name, [path, ...event.paths])
+        new ProxyEvent(event.name, [path, ...event.paths])
       );
     };
     this.emitter.on('event', this.callback);

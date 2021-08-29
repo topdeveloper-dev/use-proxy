@@ -3,11 +3,11 @@ import React from 'react';
 import {EventEmitter} from 'events';
 
 import {useProxy, runAndMonitor, releaseChildren} from '.';
-import {AccessEvent} from './models';
+import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   emitter?: EventEmitter;
-  listener?: (event: AccessEvent) => void;
+  listener?: (event: ProxyEvent) => void;
   propsProxy?: P;
 
   dispose() {
@@ -28,7 +28,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     this.render = () => {
       [this.propsProxy, this.emitter] = useProxy(props);
       const [result, filter] = runAndMonitor(this.emitter, render);
-      this.listener = (event: AccessEvent) => {
+      this.listener = (event: ProxyEvent) => {
         if (filter(event)) {
           this.dispose();
           this.forceUpdate();
