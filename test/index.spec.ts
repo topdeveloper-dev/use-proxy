@@ -69,4 +69,9 @@ describe('index', () => {
       {name: 'set', paths: ['b', 'c']},
     ]);
   });
+
+  test('to JSON', () => {
+    const [proxy] = useProxy({a: 'hello', b: {c: 'world'}});
+    expect(JSON.stringify(proxy)).toBe('{"a":"hello","b":{"c":"world"}}');
+  });
 });
