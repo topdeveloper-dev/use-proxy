@@ -75,10 +75,10 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
   return [proxy, emitter];
 }
 
-export const runAndMonitor = (
+export const runAgain = (
   emitter: EventEmitter,
   f: Function
-): [result: any, filter: (event: ProxyEvent) => boolean] => {
+): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean] => {
   const events: ProxyEvent[] = [];
   const listener = (event: ProxyEvent) => events.push(event);
   emitter.on('event', listener);
@@ -91,7 +91,7 @@ export const runAndMonitor = (
         .map(event => event.pathString())
     ),
   ];
-  const filter = (event: ProxyEvent): boolean => {
+  const shouldRunAgain = (event: ProxyEvent): boolean => {
     if (event.name === 'set') {
       const setPath = event.pathString();
       if (getPaths.some(getPath => getPath.startsWith(setPath))) {
@@ -101,5 +101,5 @@ export const runAndMonitor = (
     }
     return false;
   };
-  return [result, filter];
+  return [result, shouldRunAgain];
 };

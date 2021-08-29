@@ -64,21 +64,21 @@ class App extends Component<{store: Store}> {
 
 ## Utility methods
 
-### `runAndMonitor`
+### `runAgain`
 
-The signature of `runAndMonitor` is
+The signature of `runAgain` is
 
 ```ts
-(emitter: EventEmitter, f: Function): [result: any, filter: (event: ProxyEvent) => boolean]
+(emitter: EventEmitter, f: Function): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean]
 ```
 
-- `emitter` is generated from `useProxy` method: `const[, emitter] = useProxy(state)`
-- `f` is the function to execute
-- `result` is the result of `f()`
-- `filter` is a function which returns `true` if an `event` from `emitter` will cause `f()` to have a different result.
-  - when it returns true, most likely it's time to run `f()` again
+- `emitter` is generated from `useProxy` method: `const [proxy, emitter] = useProxy(store)`.
+- `f` is a function which reads/writes the `proxy`.
+- `result` is the result of `f()`.
+- `shouldRunAgain` is a function which returns `true` if an `event` from `emitter` will cause `f()` to have a different result.
+  - when it returns true, most likely it's time to **run** `f()` **again**.
 
-For a sample usage of `runAndMonitor`, please check [./src/react.ts](./src/react.ts).
+For a sample usage of `runAgain`, please check [./src/react.ts](./src/react.ts).
 
 
 ## For maintainers
@@ -105,7 +105,6 @@ Subsequent releases can omit `--access=public` and the release is still public.
 - Add logging, easily turn on and off
 - cache data for getter functions, just like what I did in SubX project
 - Add `autoRun` method so that user could easily save store to disk
-- naming: `runAndMonitor`, `filter`
 - test `new Set()`
 
 

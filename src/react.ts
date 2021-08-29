@@ -2,7 +2,7 @@
 import React from 'react';
 import {EventEmitter} from 'events';
 
-import {useProxy, runAndMonitor, releaseChildren} from '.';
+import {useProxy, runAgain, releaseChildren} from '.';
 import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
@@ -27,9 +27,9 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     const render = this.render.bind(this);
     this.render = () => {
       [this.propsProxy, this.emitter] = useProxy(props);
-      const [result, filter] = runAndMonitor(this.emitter, render);
+      const [result, shouldRunAgain] = runAgain(this.emitter, render);
       this.listener = (event: ProxyEvent) => {
-        if (filter(event)) {
+        if (shouldRunAgain(event)) {
           this.dispose();
           this.forceUpdate();
         }
