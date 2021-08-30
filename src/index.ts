@@ -47,7 +47,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
         return children;
       }
       const value = Reflect.get(target, path, receiver);
-      if (typeof value !== 'function') {
+      if (typeof value !== 'function' && typeof path !== 'symbol') {
         emitter.emit('event', new ProxyEvent('get', [path]));
       }
       return value;
@@ -61,7 +61,9 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
       // remove old child in case there is one
       children.releaseChild(path);
       Reflect.set(target, path, proxyChild(path, value), receiver);
-      emitter.emit('event', new ProxyEvent('set', [path]));
+      if (typeof path !== 'symbol') {
+        emitter.emit('event', new ProxyEvent('set', [path]));
+      }
       return true;
     },
   });

@@ -129,6 +129,7 @@ For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/au
 
 - Add logging, easily turn on and off
 - cache data for getter functions, just like what I did in SubX project
+- When is `typeof path === 'symbol'`?
 
 
 ## Notes
