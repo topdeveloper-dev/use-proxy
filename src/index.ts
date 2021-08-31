@@ -1,8 +1,7 @@
 import {EventEmitter} from 'events';
 import {ProxyEvent, Children} from './models';
 
-// make value special so no conflict with user defined key names
-const emitterKey = '~`!@#$%^&*()_+=-';
+const emitterKey = '__emitter__';
 const childrenKey = '&*()_+=-~`!@#$%^';
 
 export const canProxy = (obj: any) => typeof obj === 'object' && obj !== null;
@@ -17,11 +16,13 @@ export const releaseChildren = (obj: any): void => {
   }
 };
 
-export function useProxy<T extends object>(target: T): [T, EventEmitter] {
+export function useProxy<T extends object>(
+  target: T
+): [T & {__emitter__: EventEmitter}, EventEmitter] {
   // return if the object is already a proxy
   const oldEmitter = getEmitter(target);
   if (oldEmitter) {
-    return [target, oldEmitter!];
+    return [target as T & {__emitter__: EventEmitter}, oldEmitter!];
   }
 
   // two variables belongs to the scope of useProxy (the proxy)
@@ -74,7 +75,7 @@ export function useProxy<T extends object>(target: T): [T, EventEmitter] {
     Reflect.set(target, path, proxyChild(path, value), target);
   }
 
-  return [proxy, emitter];
+  return [proxy as T & {__emitter__: EventEmitter}, emitter];
 }
 
 export const runAgain = (
