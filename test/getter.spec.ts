@@ -3,14 +3,14 @@ import {ProxyEvent} from '../src/models';
 
 describe('getter', () => {
   test('getter', () => {
-    const [proxy, emitter] = useProxy({
+    const proxy = useProxy({
       visibility: false,
       get visibleTodos() {
         return !this.visibility;
       },
     });
     const events: ProxyEvent[] = [];
-    emitter.on('event', (event: ProxyEvent) => {
+    proxy.__emitter__.on('event', (event: ProxyEvent) => {
       events.push(event);
     });
     if (proxy.visibleTodos) {
@@ -22,14 +22,14 @@ describe('getter', () => {
   });
 
   test('normal method', () => {
-    const [proxy, emitter] = useProxy({
+    const proxy = useProxy({
       visibility: false,
       visibleTodos() {
         return !this.visibility;
       },
     });
     const events: ProxyEvent[] = [];
-    emitter.on('event', (event: ProxyEvent) => {
+    proxy.__emitter__.on('event', (event: ProxyEvent) => {
       events.push(event);
     });
     if (proxy.visibleTodos()) {

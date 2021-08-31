@@ -8,9 +8,9 @@ describe('autoRun', () => {
     class Store {
       greeting = 'Hello';
     }
-    const [store, emitter] = useProxy(new Store());
+    const store = useProxy(new Store());
     const greetings: string[] = [];
-    autoRun(emitter, () => {
+    autoRun(store.__emitter__, () => {
       // this method auto runs when `store.greeting` changes
       greetings.push(store.greeting);
     });
@@ -22,10 +22,10 @@ describe('autoRun', () => {
     class Store {
       number = 0;
     }
-    const [store, emitter] = useProxy(new Store());
+    const store = useProxy(new Store());
     const numbers: number[] = [];
     autoRun(
-      emitter,
+      store.__emitter__,
       debounce(
         () => {
           numbers.push(store.number);

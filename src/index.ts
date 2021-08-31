@@ -6,9 +6,6 @@ const childrenKey = '&*()_+=-~`!@#$%^';
 
 export const canProxy = (obj: any) => typeof obj === 'object' && obj !== null;
 
-export const getEmitter = (obj: any): EventEmitter | undefined =>
-  canProxy(obj) ? Reflect.get(obj, emitterKey) : undefined;
-
 // release all children
 export const releaseChildren = (obj: any): void => {
   if (canProxy(obj)) {
@@ -18,13 +15,12 @@ export const releaseChildren = (obj: any): void => {
 
 export function useProxy<T extends object>(
   target: T
-): [T & {__emitter__: EventEmitter}, EventEmitter] {
+): T & {__emitter__: EventEmitter} {
   type T2 = T & {__emitter__: EventEmitter};
 
   // return if the object is already a proxy
-  const oldEmitter = getEmitter(target);
-  if (oldEmitter) {
-    return [target as T2, oldEmitter!];
+  if ((target as T2).__emitter__) {
+    return target as T2;
   }
 
   // two variables belongs to the scope of useProxy (the proxy)
@@ -36,8 +32,8 @@ export function useProxy<T extends object>(
     if (!canProxy(value)) {
       return value;
     }
-    const [childProxy, childEmitter] = useProxy(value);
-    children.addChild(path, childEmitter, emitter);
+    const childProxy = useProxy(value);
+    children.addChild(path, childProxy.__emitter__, emitter);
     return childProxy;
   };
 
@@ -77,7 +73,7 @@ export function useProxy<T extends object>(
     Reflect.set(target, path, proxyChild(path, value), target);
   }
 
-  return [proxy as T2, emitter];
+  return proxy as T2;
 }
 
 export const runAgain = (

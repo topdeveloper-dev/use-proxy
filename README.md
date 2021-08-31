@@ -44,7 +44,7 @@ class Store {
     this.count += 1;
   }
 }
-const [store] = useProxy(new Store());
+const store = useProxy(new Store());
 
 class App extends Component<{store: Store}> {
   render() {
@@ -66,13 +66,13 @@ import {useProxy} from '@tylerlong/use-proxy';
 import {ProxyEvent} from '@tylerlong/use-proxy/build/models';
 
 class Store {}
-const [store, emitter] = useProxy(new Store());
+const store = useProxy(new Store());
 ```
 
-`emitter` is an `EventEmitter` which will emit events about read/write to store. You can subscribe to events:
+`store.__emitter__` is an `EventEmitter` which will emit events about read/write to store. You can subscribe to events:
 
 ```ts
-emitter.on('event', (event: ProxyEvent) => {
+store.__emitter__.on('event', (event: ProxyEvent) => {
   // do something with event
 });
 ```

@@ -8,7 +8,7 @@ import {ProxyEvent} from './models';
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   emitter?: EventEmitter;
   listener?: (event: ProxyEvent) => void;
-  propsProxy?: P;
+  propsProxy?: P & {__emitter__: EventEmitter};
 
   dispose() {
     if (this.emitter && this.listener) {
@@ -26,15 +26,18 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     // rewrite render()
     const render = this.render.bind(this);
     this.render = () => {
-      [this.propsProxy, this.emitter] = useProxy(props);
-      const [result, shouldRunAgain] = runAgain(this.emitter, render);
+      this.propsProxy = useProxy(props);
+      const [result, shouldRunAgain] = runAgain(
+        this.propsProxy.__emitter__,
+        render
+      );
       this.listener = (event: ProxyEvent) => {
         if (shouldRunAgain(event)) {
           this.dispose();
           this.forceUpdate();
         }
       };
-      this.emitter.on('event', this.listener);
+      this.propsProxy.__emitter__.on('event', this.listener);
       return result;
     };
 

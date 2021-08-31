@@ -25,9 +25,9 @@ describe('array', () => {
     class Store {
       todos: string[] = [];
     }
-    const [proxy, emitter] = useProxy(new Store());
+    const proxy = useProxy(new Store());
     const events: ProxyEvent[] = [];
-    emitter.on('event', (event: ProxyEvent) => {
+    proxy.__emitter__.on('event', (event: ProxyEvent) => {
       if (event.name === 'set') {
         events.push(event);
       }

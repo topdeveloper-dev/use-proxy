@@ -29,12 +29,12 @@ describe('OOP', () => {
     const todoItem = new TodoItem('Daily meeting');
     todoList.todoItems.push(todoItem);
 
-    const [proxy, emitter] = useProxy(store);
+    const proxy = useProxy(store);
     const events: ProxyEvent[] = [];
     const listener = (event: ProxyEvent) => events.push(event);
-    emitter.on('event', listener);
+    proxy.__emitter__.on('event', listener);
     proxy.todoLists[0].todoItems[0].complete = true;
-    emitter.off('event', listener);
+    proxy.__emitter__.off('event', listener);
     expect(events.map(event => event.toString())).toEqual([
       'get: todoLists',
       'get: todoLists+0',
