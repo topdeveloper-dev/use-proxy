@@ -1,7 +1,7 @@
 // eslint-disable-next-line node/no-unpublished-import
 import React from 'react';
 
-import {useProxy, runAgain, releaseChildren, ProxyType} from '.';
+import {useProxy, run, releaseChildren, ProxyType} from '.';
 import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
@@ -24,7 +24,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     const render = this.render.bind(this);
     this.render = () => {
       this.propsProxy = useProxy(props);
-      const [result, shouldRunAgain] = runAgain(this.propsProxy, render);
+      const [result, shouldRunAgain] = run(this.propsProxy, render);
       this.listener = (event: ProxyEvent) => {
         if (shouldRunAgain(event)) {
           this.dispose();

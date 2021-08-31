@@ -134,8 +134,8 @@ For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/au
 - autoRun should avoid recursion
   - because recursion has max limit
 - rewrite some emitter.on to promise
+  - the idea is great, but it will turn the library from sync to async, which will cause unexpected results.
 - allow autoRun to cancel
-- runAgain should return promise
 - rxjs debounce trigger event, my implementation debounce `f()`, that's why mine is buggy. it will cause `runAgain()` to generate incorrect result.
 
 

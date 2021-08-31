@@ -75,7 +75,7 @@ export function useProxy<T extends object>(target: T): ProxyType<T> {
   return proxy as ProxyType<T>;
 }
 
-export function runAgain<T>(
+export function run<T>(
   proxy: ProxyType<T>,
   f: Function
 ): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean] {
@@ -105,7 +105,7 @@ export function runAgain<T>(
 }
 
 export function autoRun<T>(proxy: ProxyType<T>, f: Function): void {
-  const [, shouldRunAgain] = runAgain(proxy, f);
+  const [, shouldRunAgain] = run(proxy, f);
   const listener = (event: ProxyEvent) => {
     if (shouldRunAgain(event)) {
       proxy.__emitter__.off('event', listener);
