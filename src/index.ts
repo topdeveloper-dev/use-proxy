@@ -19,10 +19,12 @@ export const releaseChildren = (obj: any): void => {
 export function useProxy<T extends object>(
   target: T
 ): [T & {__emitter__: EventEmitter}, EventEmitter] {
+  type T2 = T & {__emitter__: EventEmitter};
+
   // return if the object is already a proxy
   const oldEmitter = getEmitter(target);
   if (oldEmitter) {
-    return [target as T & {__emitter__: EventEmitter}, oldEmitter!];
+    return [target as T2, oldEmitter!];
   }
 
   // two variables belongs to the scope of useProxy (the proxy)
@@ -75,7 +77,7 @@ export function useProxy<T extends object>(
     Reflect.set(target, path, proxyChild(path, value), target);
   }
 
-  return [proxy as T & {__emitter__: EventEmitter}, emitter];
+  return [proxy as T2, emitter];
 }
 
 export const runAgain = (

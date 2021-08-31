@@ -136,7 +136,7 @@ For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/au
 - rewrite some emitter.on to promise
 - allow autoRun to cancel
 - runAgain should return promise
-- rxjs debounce trigger event, my implementation debounce `f`, that's why mine is buggy.
+- rxjs debounce trigger event, my implementation debounce `f()`, that's why mine is buggy. it will cause `runAgain()` to generate incorrect result.
 
 
 ## Notes
