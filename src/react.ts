@@ -18,8 +18,8 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     if (this.propsProxy) {
       releaseChildren(this.propsProxy);
       this.propsProxy.__emitter__.off('event', this.listener);
+      this.propsProxy = undefined;
     }
-    this.propsProxy = undefined;
   }
 
   constructor(props: Readonly<P>) {
