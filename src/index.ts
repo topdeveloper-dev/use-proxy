@@ -1,4 +1,5 @@
 import {EventEmitter} from 'events';
+
 import {ProxyEvent, Children} from './models';
 
 const emitterKey = '__emitter__';
@@ -105,12 +106,16 @@ export function run<T>(
 }
 
 export function autoRun<T>(proxy: ProxyType<T>, f: Function): void {
-  const [, shouldRunAgain] = run(proxy, f);
+  let shouldRunAgain: (event: ProxyEvent) => boolean;
   const listener = (event: ProxyEvent) => {
     if (shouldRunAgain(event)) {
       proxy.__emitter__.off('event', listener);
-      autoRun(proxy, f);
+      runOnce();
     }
   };
-  proxy.__emitter__.on('event', listener);
+  const runOnce = () => {
+    [, shouldRunAgain] = run(proxy, f);
+    proxy.__emitter__.on('event', listener);
+  };
+  runOnce();
 }
