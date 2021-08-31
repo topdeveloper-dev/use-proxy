@@ -80,24 +80,27 @@ store.__emitter__.on('event', (event: ProxyEvent) => {
 
 ## Utility methods
 
-### `runAgain`
+### `run`
 
-The signature of `runAgain` is
+The signature of `run` is
 
 ```ts
-(emitter: EventEmitter, f: Function): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean]
+function run<T>(
+  proxy: ProxyType<T>,
+  f: Function
+): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean]
 ```
 
-- `emitter` is generated from `useProxy` method: `const [proxy, emitter] = useProxy(store)`.
+- `proxy` is generated from `useProxy` method: `const proxy = useProxy(store)`.
 - `f` is a function which reads `proxy`.
 - `result` is the result of `f()`.
-- `shouldRunAgain` is a function which returns `true` if an `event` from `emitter` will cause `f()` to have a different result.
-  - when it returns true, most likely it's time to **run** `f()` **again**.
+- `shouldRunAgain` is a function which returns `true` if an `event` from `proxy` will cause `f()` to have a different result.
+  - when it returns true, most likely it's time to run `f()` again.
 
-When you invoke `runAgain`, `f()` is invoked immediately. 
-You can subscribe to `emitter` and filter the events using `shouldRunAgain` to get the `event` to run `f()` again.
+When you invoke `run(proxy, f)`, `f()` is invoked immediately. 
+You can subscribe to `proxy.__emitter__` and filter the events using `shouldRunAgain` to get the `event` to run `f()` again.
 
-For a sample usage of `runAgain`, please check [./src/react.ts](./src/react.ts).
+For a sample usage of `run`, please check [./src/react.ts](./src/react.ts).
 
 
 ### `autoRun`
@@ -105,14 +108,14 @@ For a sample usage of `runAgain`, please check [./src/react.ts](./src/react.ts).
 The signature of `autoRun` is
 
 ```ts
-(emitter: EventEmitter, f: Function): void
+function autoRun<T>(proxy: ProxyType<T>, f: Function): void
 ```
 
-- `emitter` is generated from `useProxy` method: `const [proxy, emitter] = useProxy(store)`.
+- `proxy` is generated from `useProxy` method: `const proxy = useProxy(store)`.
 - `f` is a function which reads `proxy`.
 
-When you invoke `autoRun(emitter, f)`, `f()` is invoked immediately.
-`f()` will be invoked automatically afterwards if there are events from `emitter` which change the result of `f()`.
+When you invoke `autoRun(proxy, f)`, `f()` is invoked immediately.
+`f()` will be invoked automatically afterwards if there are events from `proxy` which change the result of `f()`.
 
 You may [debounce](https://lodash.com/docs/4.17.15#debounce) `f()`.
 
@@ -136,7 +139,7 @@ For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/au
 - rewrite some emitter.on to promise
   - the idea is great, but it will turn the library from sync to async, which will cause unexpected results.
 - allow autoRun to cancel
-- rxjs debounce trigger event, my implementation debounce `f()`, that's why mine is buggy. it will cause `runAgain()` to generate incorrect result.
+- rxjs debounce trigger event, my implementation debounce `f()`, that's why mine is buggy. it will cause `run()` to generate incorrect result.
 
 
 ## Notes
