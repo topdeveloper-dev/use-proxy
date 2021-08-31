@@ -1,3 +1,2 @@
 --ignore-dir=build
---ignore-dir=test
 --ignore-file=match:/^yarn\.lock$/

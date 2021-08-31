@@ -75,15 +75,15 @@ export function useProxy<T extends object>(target: T): ProxyType<T> {
   return proxy as ProxyType<T>;
 }
 
-export const runAgain = (
-  emitter: EventEmitter,
+export function runAgain<T>(
+  proxy: ProxyType<T>,
   f: Function
-): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean] => {
+): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean] {
   const events: ProxyEvent[] = [];
   const listener = (event: ProxyEvent) => events.push(event);
-  emitter.on('event', listener);
+  proxy.__emitter__.on('event', listener);
   const result = f();
-  emitter.off('event', listener);
+  proxy.__emitter__.off('event', listener);
   const getPaths = [
     ...new Set(
       events
@@ -102,15 +102,15 @@ export const runAgain = (
     return false;
   };
   return [result, shouldRunAgain];
-};
+}
 
-export const autoRun = (emitter: EventEmitter, f: Function): void => {
-  const [, shouldRunAgain] = runAgain(emitter, f);
+export function autoRun<T>(proxy: ProxyType<T>, f: Function): void {
+  const [, shouldRunAgain] = runAgain(proxy, f);
   const listener = (event: ProxyEvent) => {
     if (shouldRunAgain(event)) {
-      emitter.off('event', listener);
-      autoRun(emitter, f);
+      proxy.__emitter__.off('event', listener);
+      autoRun(proxy, f);
     }
   };
-  emitter.on('event', listener);
-};
+  proxy.__emitter__.on('event', listener);
+}

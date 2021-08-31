@@ -28,10 +28,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     this.render = () => {
       this.propsProxy = useProxy(props);
       this.emitter = this.propsProxy.__emitter__;
-      const [result, shouldRunAgain] = runAgain(
-        this.propsProxy.__emitter__,
-        render
-      );
+      const [result, shouldRunAgain] = runAgain(this.propsProxy, render);
       this.listener = (event: ProxyEvent) => {
         if (shouldRunAgain(event)) {
           this.dispose();
