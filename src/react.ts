@@ -1,22 +1,19 @@
 // eslint-disable-next-line node/no-unpublished-import
 import React from 'react';
-import {EventEmitter} from 'events';
 
 import {useProxy, runAgain, releaseChildren, ProxyType} from '.';
 import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   propsProxy?: ProxyType<P>;
-  emitter?: EventEmitter;
   listener?: (event: ProxyEvent) => void;
 
   dispose() {
-    if (this.emitter && this.listener && this.propsProxy) {
-      this.emitter.off('event', this.listener);
+    if (this.propsProxy && this.listener) {
       releaseChildren(this.propsProxy);
+      this.propsProxy.__emitter__.off('event', this.listener);
     }
     this.propsProxy = undefined;
-    this.emitter = undefined;
     this.listener = undefined;
   }
 
@@ -27,7 +24,6 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     const render = this.render.bind(this);
     this.render = () => {
       this.propsProxy = useProxy(props);
-      this.emitter = this.propsProxy.__emitter__;
       const [result, shouldRunAgain] = runAgain(this.propsProxy, render);
       this.listener = (event: ProxyEvent) => {
         if (shouldRunAgain(event)) {
