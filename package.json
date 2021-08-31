@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/jest": "^27.0.1",
     "@types/lodash": "^4.14.172",
-    "@types/node": "^16.7.4",
+    "@types/node": "^16.7.8",
     "@types/react": "^17.0.19",
     "@types/react-test-renderer": "^17.0.1",
     "gts": "^3.1.0",
