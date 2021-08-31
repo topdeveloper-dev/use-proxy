@@ -15,9 +15,9 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
       this.emitter.off('event', this.listener);
       releaseChildren(this.propsProxy);
     }
-    delete this.emitter;
-    delete this.listener;
-    delete this.propsProxy;
+    this.propsProxy = undefined;
+    this.emitter = undefined;
+    this.listener = undefined;
   }
 
   constructor(props: Readonly<P>) {
