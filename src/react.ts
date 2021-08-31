@@ -2,19 +2,19 @@
 import React from 'react';
 import {EventEmitter} from 'events';
 
-import {useProxy, runAgain, releaseChildren} from '.';
+import {useProxy, runAgain, releaseChildren, ProxyType} from '.';
 import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
+  propsProxy?: ProxyType<P>;
   emitter?: EventEmitter;
   listener?: (event: ProxyEvent) => void;
-  propsProxy?: P & {__emitter__: EventEmitter};
 
   dispose() {
-    if (this.emitter && this.listener) {
+    if (this.emitter && this.listener && this.propsProxy) {
       this.emitter.off('event', this.listener);
+      releaseChildren(this.propsProxy);
     }
-    releaseChildren(this.propsProxy);
     delete this.emitter;
     delete this.listener;
     delete this.propsProxy;
@@ -27,6 +27,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     const render = this.render.bind(this);
     this.render = () => {
       this.propsProxy = useProxy(props);
+      this.emitter = this.propsProxy.__emitter__;
       const [result, shouldRunAgain] = runAgain(
         this.propsProxy.__emitter__,
         render

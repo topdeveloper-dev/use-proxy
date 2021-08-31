@@ -4,23 +4,22 @@ import {ProxyEvent, Children} from './models';
 const emitterKey = '__emitter__';
 const childrenKey = '&*()_+=-~`!@#$%^';
 
-export const canProxy = (obj: any) => typeof obj === 'object' && obj !== null;
+export type ProxyType<T> = T & {__emitter__: EventEmitter};
+
+export const canProxy = (obj: object) =>
+  typeof obj === 'object' && obj !== null;
 
 // release all children
-export const releaseChildren = (obj: any): void => {
+export const releaseChildren = (obj: object): void => {
   if (canProxy(obj)) {
     (Reflect.get(obj, childrenKey) as Children)?.releasesAll();
   }
 };
 
-export function useProxy<T extends object>(
-  target: T
-): T & {__emitter__: EventEmitter} {
-  type T2 = T & {__emitter__: EventEmitter};
-
+export function useProxy<T extends object>(target: T): ProxyType<T> {
   // return if the object is already a proxy
-  if ((target as T2).__emitter__) {
-    return target as T2;
+  if ((target as ProxyType<T>).__emitter__) {
+    return target as ProxyType<T>;
   }
 
   // two variables belongs to the scope of useProxy (the proxy)
@@ -38,7 +37,7 @@ export function useProxy<T extends object>(
   };
 
   const proxy = new Proxy(target, {
-    get: (target: T, path: string, receiver?: any) => {
+    get: (target: T, path: string, receiver?: T) => {
       if (path === emitterKey) {
         return emitter;
       }
@@ -51,7 +50,7 @@ export function useProxy<T extends object>(
       }
       return value;
     },
-    set: (target: T, path: string, value: any, receiver?: any): boolean => {
+    set: (target: T, path: string, value: any, receiver?: T): boolean => {
       // no assign object to itself, doesn't make sense
       // array.length assign oldValue === value, strange
       if (canProxy(value) && value === Reflect.get(target, path)) {
@@ -73,7 +72,7 @@ export function useProxy<T extends object>(
     Reflect.set(target, path, proxyChild(path, value), target);
   }
 
-  return proxy as T2;
+  return proxy as ProxyType<T>;
 }
 
 export const runAgain = (
