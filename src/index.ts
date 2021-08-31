@@ -2,7 +2,6 @@ import {EventEmitter} from 'events';
 
 import {ProxyEvent, Children} from './models';
 
-const emitterKey = '__emitter__';
 const childrenKey = '&*()_+=-~`!@#$%^';
 
 export type ProxyType<T> = T & {__emitter__: EventEmitter};
@@ -39,7 +38,7 @@ export function useProxy<T extends object>(target: T): ProxyType<T> {
 
   const proxy = new Proxy(target, {
     get: (target: T, path: string, receiver?: T) => {
-      if (path === emitterKey) {
+      if (path === '__emitter__') {
         return emitter;
       }
       if (path === childrenKey) {

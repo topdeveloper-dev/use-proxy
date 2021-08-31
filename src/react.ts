@@ -6,15 +6,20 @@ import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   propsProxy?: ProxyType<P>;
-  listener?: (event: ProxyEvent) => void;
+  shouldRunAgain!: (event: ProxyEvent) => boolean;
+  listener = (event: ProxyEvent) => {
+    if (this.shouldRunAgain(event)) {
+      this.dispose();
+      this.forceUpdate();
+    }
+  };
 
   dispose() {
-    if (this.propsProxy && this.listener) {
+    if (this.propsProxy) {
       releaseChildren(this.propsProxy);
       this.propsProxy.__emitter__.off('event', this.listener);
     }
     this.propsProxy = undefined;
-    this.listener = undefined;
   }
 
   constructor(props: Readonly<P>) {
@@ -25,12 +30,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     this.render = () => {
       this.propsProxy = useProxy(props);
       const [result, shouldRunAgain] = run(this.propsProxy, render);
-      this.listener = (event: ProxyEvent) => {
-        if (shouldRunAgain(event)) {
-          this.dispose();
-          this.forceUpdate();
-        }
-      };
+      this.shouldRunAgain = shouldRunAgain;
       this.propsProxy.__emitter__.on('event', this.listener);
       return result;
     };
