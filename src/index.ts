@@ -108,11 +108,12 @@ export function autoRun<T>(proxy: ProxyType<T>, f: Function): void {
   let shouldRunAgain: (event: ProxyEvent) => boolean;
   const listener = (event: ProxyEvent) => {
     if (shouldRunAgain(event)) {
-      proxy.__emitter__.off('event', listener);
       runOnce();
     }
   };
   const runOnce = () => {
+    // todo: 没必要 on and off, 除非提供了接口可以停止 autoRun。 一直on就行了
+    proxy.__emitter__.off('event', listener);
     [, shouldRunAgain] = run(proxy, f);
     proxy.__emitter__.on('event', listener);
   };

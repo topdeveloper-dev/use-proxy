@@ -134,12 +134,11 @@ For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/au
 - cache data for getter functions, just like what I did in SubX project
 - When is `typeof path === 'symbol'`?
 - if `debounce`, autoRun cannot detect read events any more
-- autoRun should avoid recursion
-  - because recursion has max limit
 - rewrite some emitter.on to promise
   - the idea is great, but it will turn the library from sync to async, which will cause unexpected results.
 - allow autoRun to cancel
 - rxjs debounce trigger event, my implementation debounce `f()`, that's why mine is buggy. it will cause `run()` to generate incorrect result.
+- 有时没必要反复 emitter on and off，一直on就行了，除非提供了接口可以停止事件处理。
 
 
 ## Notes
