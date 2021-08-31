@@ -28,19 +28,18 @@ describe('autoRun', () => {
     const numbers: number[] = [];
     const {start} = autoRun(
       store,
-      debounce(
-        () => {
-          numbers.push(store.number);
-        },
-        10,
-        {leading: true}
-      )
+      () => numbers.push(store.number),
+      (f: () => void) => {
+        return debounce(f, 10, {leading: true, trailing: true});
+      }
     );
     start();
     store.number = 1;
     store.number = 2;
+    store.number = 3;
+    store.number = 4;
     expect(numbers).toEqual([0]);
     await waitFor({interval: 20});
-    expect(numbers).toEqual([0, 2]);
+    expect(numbers).toEqual([0, 4]);
   });
 });

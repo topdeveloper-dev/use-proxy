@@ -106,7 +106,8 @@ export function run<T>(
 
 export function autoRun<T>(
   proxy: ProxyType<T>,
-  f: Function
+  f: () => void,
+  decorator?: (f: () => void) => () => void
 ): {start: () => void; stop: () => void} {
   let shouldRunAgain: (event: ProxyEvent) => boolean;
   const listener = (event: ProxyEvent) => {
@@ -114,7 +115,12 @@ export function autoRun<T>(
       runOnce();
     }
   };
-  const runOnce = () => ([, shouldRunAgain] = run(proxy, f));
+  let runOnce = () => {
+    [, shouldRunAgain] = run(proxy, f);
+  };
+  if (decorator) {
+    runOnce = decorator(runOnce);
+  }
   return {
     start: () => {
       runOnce();
