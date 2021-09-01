@@ -88,19 +88,21 @@ The signature of `run` is
 function run<T>(
   proxy: ProxyType<T>,
   func: Function
-): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean]
+): [result: any, isTrigger: (event: ProxyEvent) => boolean]
 ```
 
 - `proxy` is generated from `useProxy` method: `const proxy = useProxy(store)`.
 - `func` is a function which reads `proxy`.
 - `result` is the result of `func()`.
-- `shouldRunAgain` is a function which returns `true` if an `event` from `proxy` will cause `func()` to have a different result.
-  - when it returns true, most likely it's time to run `func()` again.
+- `isTrigger` is a function which returns `true` if an `event` will "trigger" `func()` to have a different result.
+  - when it returns true, most likely it's time to run `func()` again(because you will get a different result from last time).
 
 When you invoke `run(proxy, func)`, `func()` is invoked immediately. 
-You can subscribe to `proxy.__emitter__` and filter the events using `shouldRunAgain` to get the `event` to run `func()` again.
+You can subscribe to `proxy.__emitter__` and filter the events using `isTrigger` to get the trigger events (to run `func()` again).
 
 For a sample usage of `run`, please check [./src/react.ts](./src/react.ts).
+
+Another example is the implementation of the `autoRun` utility method. You may find it in [./src/index.ts](./src/index.ts).
 
 
 ### `autoRun`
@@ -117,13 +119,14 @@ function autoRun<T>(
 
 - `proxy` is generated from `useProxy` method: `const proxy = useProxy(store)`.
 - `func` is a function which reads `proxy`.
+- `decorator` is a method to change run schedule of `func`, for example: `func => _.debounce(func, 10, {leading: true, trailing: true})`
+- `start` and `stop` is to start and stop `autoRun`.
 
-When you invoke `autoRun(proxy, func)`, `func()` is invoked immediately.
-`func()` will be invoked automatically afterwards if there are events from `proxy` which change the result of `func()`.
+When you invoke `start()`, `func()` is invoked immediately.
+`func()` will be invoked automatically afterwards if there are trigger events from `proxy` which change the result of `func()`.
+Invoke `stop` to stop `autoRun`.
 
-You may [debounce](https://lodash.com/docs/4.17.15#debounce) `func()`.
-
-For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/autoRun.spec.ts).
+For sample usages of `autoRun`, please check [./test/autoRun.spec.ts](./test/autoRun.spec.ts).
 
 
 ## Known issue
@@ -135,17 +138,15 @@ For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/au
 ## Todo
 
 - Add logging, easily turn on and off
-- cache data for getter functions, just like what I did in SubX project
+- cache data for getter functions to make it faster, just like what I did in SubX project
 - When is `typeof path === 'symbol'`?
-- if `debounce`, autoRun cannot detect read events any more
-
-- rxjs debounce trigger event, my implementation debounce `func()`, that's why mine is buggy. it will cause `run()` to generate incorrect result.
 - 有时没必要反复 emitter on and off，一直on就行了，除非提供了接口可以停止事件处理。
 
 
 ## Notes
 
 - every `emitter.on()` must have a corresponding `emitter.off()`. Otherwise there will be memory leak.
+  - you don't have to `on` and `off` again and again. Sometimes you just `on` and let it on. `off` it before exit of the app/component
 - rewrite some emitter.on to promise
   - the idea is great, but it will turn the library from sync to async, which will cause unexpected consequences.
   - `React.render`, `EventEmitter.on`, `rxjs.observable.next` are all sync, there must be a good reason to stay with sync. 
