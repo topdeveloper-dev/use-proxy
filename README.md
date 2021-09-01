@@ -87,18 +87,18 @@ The signature of `run` is
 ```ts
 function run<T>(
   proxy: ProxyType<T>,
-  f: Function
+  func: Function
 ): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean]
 ```
 
 - `proxy` is generated from `useProxy` method: `const proxy = useProxy(store)`.
-- `f` is a function which reads `proxy`.
-- `result` is the result of `f()`.
-- `shouldRunAgain` is a function which returns `true` if an `event` from `proxy` will cause `f()` to have a different result.
-  - when it returns true, most likely it's time to run `f()` again.
+- `func` is a function which reads `proxy`.
+- `result` is the result of `func()`.
+- `shouldRunAgain` is a function which returns `true` if an `event` from `proxy` will cause `func()` to have a different result.
+  - when it returns true, most likely it's time to run `func()` again.
 
-When you invoke `run(proxy, f)`, `f()` is invoked immediately. 
-You can subscribe to `proxy.__emitter__` and filter the events using `shouldRunAgain` to get the `event` to run `f()` again.
+When you invoke `run(proxy, func)`, `func()` is invoked immediately. 
+You can subscribe to `proxy.__emitter__` and filter the events using `shouldRunAgain` to get the `event` to run `func()` again.
 
 For a sample usage of `run`, please check [./src/react.ts](./src/react.ts).
 
@@ -108,16 +108,20 @@ For a sample usage of `run`, please check [./src/react.ts](./src/react.ts).
 The signature of `autoRun` is
 
 ```ts
-function autoRun<T>(proxy: ProxyType<T>, f: Function): void
+function autoRun<T>(
+  proxy: ProxyType<T>,
+  func: () => void,
+  decorator?: (func: () => void) => () => void
+): {start: () => void; stop: () => void}
 ```
 
 - `proxy` is generated from `useProxy` method: `const proxy = useProxy(store)`.
-- `f` is a function which reads `proxy`.
+- `func` is a function which reads `proxy`.
 
-When you invoke `autoRun(proxy, f)`, `f()` is invoked immediately.
-`f()` will be invoked automatically afterwards if there are events from `proxy` which change the result of `f()`.
+When you invoke `autoRun(proxy, func)`, `func()` is invoked immediately.
+`func()` will be invoked automatically afterwards if there are events from `proxy` which change the result of `func()`.
 
-You may [debounce](https://lodash.com/docs/4.17.15#debounce) `f()`.
+You may [debounce](https://lodash.com/docs/4.17.15#debounce) `func()`.
 
 For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/autoRun.spec.ts).
 
@@ -135,7 +139,7 @@ For a sample usage of `autoRun`, please check [./test/autoRun.spec.ts](./test/au
 - When is `typeof path === 'symbol'`?
 - if `debounce`, autoRun cannot detect read events any more
 
-- rxjs debounce trigger event, my implementation debounce `f()`, that's why mine is buggy. it will cause `run()` to generate incorrect result.
+- rxjs debounce trigger event, my implementation debounce `func()`, that's why mine is buggy. it will cause `run()` to generate incorrect result.
 - 有时没必要反复 emitter on and off，一直on就行了，除非提供了接口可以停止事件处理。
 
 

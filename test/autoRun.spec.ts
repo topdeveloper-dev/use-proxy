@@ -10,13 +10,13 @@ describe('autoRun', () => {
     }
     const store = useProxy(new Store());
     const greetings: string[] = [];
-    const {start, stop} = autoRun(store, () => {
+    const autoRunner = autoRun(store, () => {
       // this method auto runs when `store.greeting` changes
       greetings.push(store.greeting);
     });
-    start();
+    autoRunner.start();
     store.greeting = 'Hi';
-    stop();
+    autoRunner.stop();
     expect(greetings).toEqual(['Hello', 'Hi']);
   });
 
@@ -26,14 +26,12 @@ describe('autoRun', () => {
     }
     const store = useProxy(new Store());
     const numbers: number[] = [];
-    const {start} = autoRun(
+    const autoRunner = autoRun(
       store,
       () => numbers.push(store.number),
-      (f: () => void) => {
-        return debounce(f, 10, {leading: true, trailing: true});
-      }
+      (func: () => void) => debounce(func, 10, {leading: true, trailing: true})
     );
-    start();
+    autoRunner.start();
     store.number = 1;
     store.number = 2;
     store.number = 3;

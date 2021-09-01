@@ -77,12 +77,12 @@ export function useProxy<T extends object>(target: T): ProxyType<T> {
 
 export function run<T>(
   proxy: ProxyType<T>,
-  f: Function
+  func: Function
 ): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean] {
   const events: ProxyEvent[] = [];
   const listener = (event: ProxyEvent) => events.push(event);
   proxy.__emitter__.on('event', listener);
-  const result = f();
+  const result = func();
   proxy.__emitter__.off('event', listener);
   const getPaths = [
     ...new Set(
@@ -106,8 +106,8 @@ export function run<T>(
 
 export function autoRun<T>(
   proxy: ProxyType<T>,
-  f: () => void,
-  decorator?: (f: () => void) => () => void
+  func: () => void,
+  decorator?: (func: () => void) => () => void
 ): {start: () => void; stop: () => void} {
   let shouldRunAgain: (event: ProxyEvent) => boolean;
   const listener = (event: ProxyEvent) => {
@@ -116,7 +116,7 @@ export function autoRun<T>(
     }
   };
   let runOnce = () => {
-    [, shouldRunAgain] = run(proxy, f);
+    [, shouldRunAgain] = run(proxy, func);
   };
   if (decorator) {
     runOnce = decorator(runOnce);
