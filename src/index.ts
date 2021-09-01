@@ -78,7 +78,7 @@ export function useProxy<T extends object>(target: T): ProxyType<T> {
 export function run<T>(
   proxy: ProxyType<T>,
   func: Function
-): [result: any, shouldRunAgain: (event: ProxyEvent) => boolean] {
+): [result: any, isTrigger: (event: ProxyEvent) => boolean] {
   const events: ProxyEvent[] = [];
   const listener = (event: ProxyEvent) => events.push(event);
   proxy.__emitter__.on('event', listener);
@@ -91,7 +91,7 @@ export function run<T>(
         .map(event => event.pathString())
     ),
   ];
-  const shouldRunAgain = (event: ProxyEvent): boolean => {
+  const isTrigger = (event: ProxyEvent): boolean => {
     if (event.name === 'set') {
       const setPath = event.pathString();
       if (getPaths.some(getPath => getPath.startsWith(setPath))) {
@@ -101,7 +101,7 @@ export function run<T>(
     }
     return false;
   };
-  return [result, shouldRunAgain];
+  return [result, isTrigger];
 }
 
 export function autoRun<T>(
@@ -109,14 +109,14 @@ export function autoRun<T>(
   func: () => void,
   decorator?: (func: () => void) => () => void
 ): {start: () => void; stop: () => void} {
-  let shouldRunAgain: (event: ProxyEvent) => boolean;
+  let isTrigger: (event: ProxyEvent) => boolean;
   const listener = (event: ProxyEvent) => {
-    if (shouldRunAgain(event)) {
+    if (isTrigger(event)) {
       runOnce();
     }
   };
   let runOnce = () => {
-    [, shouldRunAgain] = run(proxy, func);
+    [, isTrigger] = run(proxy, func);
   };
   if (decorator) {
     runOnce = decorator(runOnce);

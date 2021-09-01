@@ -6,9 +6,9 @@ import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
   propsProxy?: ProxyType<P>;
-  shouldRunAgain!: (event: ProxyEvent) => boolean;
+  isTrigger!: (event: ProxyEvent) => boolean;
   listener = (event: ProxyEvent) => {
-    if (this.shouldRunAgain(event)) {
+    if (this.isTrigger(event)) {
       this.dispose();
       this.forceUpdate();
     }
@@ -29,8 +29,8 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     const render = this.render.bind(this);
     this.render = () => {
       this.propsProxy = useProxy(props);
-      const [result, shouldRunAgain] = run(this.propsProxy, render);
-      this.shouldRunAgain = shouldRunAgain;
+      const [result, isTrigger] = run(this.propsProxy, render);
+      this.isTrigger = isTrigger;
       this.propsProxy.__emitter__.on('event', this.listener);
       return result;
     };
