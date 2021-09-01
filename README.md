@@ -140,13 +140,13 @@ For sample usages of `autoRun`, please check [./test/autoRun.spec.ts](./test/aut
 - Add logging, easily turn on and off
 - cache data for getter functions to make it faster, just like what I did in SubX project
 - When is `typeof path === 'symbol'`?
-- 有时没必要反复 emitter on and off，一直on就行了，除非提供了接口可以停止事件处理。
 
 
 ## Notes
 
 - every `emitter.on()` must have a corresponding `emitter.off()`. Otherwise there will be memory leak.
-  - you don't have to `on` and `off` again and again. Sometimes you just `on` and let it on. `off` it before exit of the app/component
-- rewrite some emitter.on to promise
+  - you also don't have to `on` and `off` again and again. Sometimes you just `on` and let it on until user explicit it request it to be off.
+    - check the source code of `autoRun`.
+- rewrite some emitter.on to promise.
   - the idea is great, but it will turn the library from sync to async, which will cause unexpected consequences.
   - `React.render`, `EventEmitter.on`, `rxjs.observable.next` are all sync, there must be a good reason to stay with sync. 
