@@ -20,18 +20,18 @@ describe('simplify gets', () => {
       'todoLists+1+todoItems',
       'todoLists+1+todoItems+1',
     ];
-    const f = (a: string[]): string[] => {
-      const b = _.sortBy([...new Set(a)], s => -s.length);
+    const simplifyGets = (gets: string[]): string[] => {
+      gets = _.sortBy([...new Set(gets)], s => -s.length);
       const result: string[] = [];
-      while (b.length > 0) {
-        const s: string = b.pop()!;
-        if (!_.some(b, item => item.startsWith(s))) {
-          result.push(s);
+      while (gets.length > 0) {
+        const str: string = gets.pop()!;
+        if (!_.some(gets, item => item.startsWith(str))) {
+          result.push(str);
         }
       }
       return result;
     };
-    const result = f(gets);
+    const result = simplifyGets(gets);
     expect(result.sort()).toEqual(
       [
         'todoLists+0+todoItems+0',
