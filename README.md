@@ -20,7 +20,7 @@ It supports TypeScript very well.
 
 ## Demo application
 
-[TodoMVC powered by UseProxy](chuntaoliu.com/use-proxy-demo-todomvc/)
+[TodoMVC powered by UseProxy](https://chuntaoliu.com/use-proxy-demo-todomvc/)
 
 [Source Code](https://github.com/tylerlong/use-proxy-demo-todomvc)
 
