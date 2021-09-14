@@ -88,12 +88,12 @@ export function run<T>(
     ...new Set(
       events
         .filter(event => event.name === 'get')
-        .map(event => event.pathString())
+        .map(event => event.pathString)
     ),
   ];
   const isTrigger = (event: ProxyEvent): boolean => {
     if (event.name === 'set') {
-      const setPath = event.pathString();
+      const setPath = event.pathString;
       if (getPaths.some(getPath => getPath.startsWith(setPath))) {
         // if setPath is shorter than getPath, then it's time to refresh
         return true;

@@ -33,9 +33,6 @@ describe('array', () => {
       }
     });
     proxy.todos.push('hello');
-    expect(events.map(e => e.pathString())).toEqual([
-      'todos+0',
-      'todos+length',
-    ]);
+    expect(events.map(e => e.pathString)).toEqual(['todos+0', 'todos+length']);
   });
 });

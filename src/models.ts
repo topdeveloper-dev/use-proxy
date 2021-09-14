@@ -9,12 +9,12 @@ export class ProxyEvent {
     this.paths = paths;
   }
 
-  pathString() {
+  get pathString() {
     return this.paths.join('+');
   }
 
   toString() {
-    return `${this.name}: ${this.pathString()}`;
+    return `${this.name}: ${this.pathString}`;
   }
 }
 
