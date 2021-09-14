@@ -133,6 +133,7 @@ For sample usages of `autoRun`, please check [./test/autoRun.spec.ts](./test/aut
 
 - It only monitors `get` and `set` of properties. It doesn't monitor `delete`, `has` and `keys`. Because in 99.9% cases, `get` & `set` are sufficient to monitor and manage data.
 - You cannot proxy some built-in objects, such as `Set` & `Map`.
+- `run` and `autoRun` only support sync methods. for async methods, make sure that the async part is irrelevant because it won't be monitored.
 
 
 ## Todo
