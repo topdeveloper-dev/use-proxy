@@ -9,7 +9,6 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
   isTrigger!: (event: ProxyEvent) => boolean;
   listener = (event: ProxyEvent) => {
     if (this.isTrigger(event)) {
-      this.dispose();
       this.forceUpdate();
     }
   };
@@ -28,6 +27,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     // rewrite render()
     const render = this.render.bind(this);
     this.render = () => {
+      this.dispose();
       this.propsProxy = useProxy(props);
       const [result, isTrigger] = run(this.propsProxy, render);
       this.isTrigger = isTrigger;
@@ -48,7 +48,8 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
 
     // rewrite shouldComponentUpdate
     if (!this.shouldComponentUpdate) {
-      this.shouldComponentUpdate = () => false;
+      this.shouldComponentUpdate = (nextProps, nextState) =>
+        this.state !== nextState;
     }
   }
 }
