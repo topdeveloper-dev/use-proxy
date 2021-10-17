@@ -138,7 +138,6 @@ For sample usages of `autoRun`, please check [./test/autoRun.spec.ts](./test/aut
 
 ## Todo
 
-- Add logging, easily turn on and off
 - cache data for getter functions to make it faster, just like what I did in SubX project
 - When is `typeof path === 'symbol'`?
 
