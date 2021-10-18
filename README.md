@@ -140,6 +140,8 @@ For sample usages of `autoRun`, please check [./test/autoRun.spec.ts](./test/aut
 
 - cache data for getter functions to make it faster, just like what I did in SubX project
 - When is `typeof path === 'symbol'`?
+- Support React Hooks https://reactjs.org/docs/hooks-intro.html
+  - I think I mean function style react components
 
 
 ## Notes
