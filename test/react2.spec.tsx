@@ -55,13 +55,20 @@ class HanziComponent extends Component<{hanzi: Hanzi}> {
 describe('React', () => {
   test('default', async () => {
     const renderer = TestRenderer.create(<App store={store} />);
-    const minusButton = renderer.root.find(
+    const changeButton = renderer.root.find(
       el =>
         el.type === 'button' && el.children && el.children[0] === 'Change Hanzi'
     );
-    minusButton.props.onClick();
-    minusButton.props.onClick();
-    minusButton.props.onClick();
-    expect(renderHistory).toEqual(['刘', '春', '涛', '刘']);
+    expect(renderHistory).toEqual(['刘']);
+    store.hanzi.hanzi = '劉';
+    expect(renderHistory).toEqual(['刘', '劉']);
+    changeButton.props.onClick();
+    expect(renderHistory).toEqual(['刘', '劉', '春']);
+    store.hanzi.hanzi = '耀';
+    expect(renderHistory).toEqual(['刘', '劉', '春', '耀']);
+    changeButton.props.onClick();
+    expect(renderHistory).toEqual(['刘', '劉', '春', '耀', '涛']);
+    store.hanzi.hanzi = '阳';
+    expect(renderHistory).toEqual(['刘', '劉', '春', '耀', '涛', '阳']);
   });
 });
