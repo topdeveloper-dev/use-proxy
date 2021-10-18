@@ -5,7 +5,6 @@ import {useProxy, run, releaseChildren, ProxyType} from '.';
 import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
-  // nextProps: Readonly<P>;
   propsProxy?: ProxyType<P>;
   isTrigger!: (event: ProxyEvent) => boolean;
   listener = (event: ProxyEvent) => {
@@ -24,7 +23,6 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
 
   constructor(props: Readonly<P>) {
     super(props);
-    // this.nextProps = props;
 
     // rewrite render()
     const render = this.render.bind(this);
@@ -44,16 +42,6 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     this.componentWillUnmount = () => {
       this.dispose();
       componentWillUnmount();
-    };
-
-    // rewrite shouldComponentUpdate
-    const shouldComponentUpdate = this.shouldComponentUpdate
-      ? this.shouldComponentUpdate.bind(this)
-      : (nextProps: Readonly<P>, nextState: Readonly<S>) =>
-          this.props !== nextProps || this.state !== nextState;
-    this.shouldComponentUpdate = (nextProps, nextState, nextContext) => {
-      // this.nextProps = nextProps;
-      return shouldComponentUpdate(nextProps, nextState, nextContext);
     };
   }
 }
