@@ -5,7 +5,7 @@ import {useProxy, run, releaseChildren, ProxyType} from '.';
 import {ProxyEvent} from './models';
 
 export class Component<P = {}, S = {}> extends React.Component<P, S> {
-  theProps: Readonly<P>;
+  // nextProps: Readonly<P>;
   propsProxy?: ProxyType<P>;
   isTrigger!: (event: ProxyEvent) => boolean;
   listener = (event: ProxyEvent) => {
@@ -24,13 +24,13 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
 
   constructor(props: Readonly<P>) {
     super(props);
-    this.theProps = props;
+    // this.nextProps = props;
 
     // rewrite render()
     const render = this.render.bind(this);
     this.render = () => {
       this.dispose();
-      this.propsProxy = useProxy(this.theProps);
+      this.propsProxy = useProxy(this.props);
       const [result, isTrigger] = run(this.propsProxy, render);
       this.isTrigger = isTrigger;
       this.propsProxy.__emitter__.on('event', this.listener);
@@ -52,7 +52,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
       : (nextProps: Readonly<P>, nextState: Readonly<S>) =>
           this.props !== nextProps || this.state !== nextState;
     this.shouldComponentUpdate = (nextProps, nextState, nextContext) => {
-      this.theProps = nextProps;
+      // this.nextProps = nextProps;
       return shouldComponentUpdate(nextProps, nextState, nextContext);
     };
   }
