@@ -49,7 +49,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
     // rewrite shouldComponentUpdate
     if (!this.shouldComponentUpdate) {
       this.shouldComponentUpdate = (nextProps, nextState) =>
-        this.state !== nextState;
+        this.props !== nextProps || this.state !== nextState;
     }
   }
 }
