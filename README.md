@@ -142,6 +142,7 @@ For sample usages of `autoRun`, please check [./test/autoRun.spec.ts](./test/aut
 - When is `typeof path === 'symbol'`?
 - Support React Hooks https://reactjs.org/docs/hooks-intro.html
   - I think I mean function style react components
+- Native objects 会报错，比如说 `window.speechSynthesis.getVoices()`
 
 
 ## Notes
