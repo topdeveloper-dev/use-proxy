@@ -147,6 +147,7 @@ For sample usages of `autoRun`, please check [./test/autoRun.spec.ts](./test/aut
   - 一个workaround是把property的值设为null。
     - 不设为undefined，因为json不支持，持久化会有问题。 不过这个问题和本项目无关
 - 如果有循环引用的结构，会报错 `Uncaught RangeError: Maximum call stack size exceeded`
+- autoRun 的函数中如果修改了数据，就会引发死循环？ 也就是autoRun不能修改proxy的数据？
 
 
 ## Notes
