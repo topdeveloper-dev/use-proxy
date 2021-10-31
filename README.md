@@ -143,6 +143,10 @@ For sample usages of `autoRun`, please check [./test/autoRun.spec.ts](./test/aut
 - Support React Hooks https://reactjs.org/docs/hooks-intro.html
   - I think I mean function style react components
 - Native objects 会报错，比如说 `window.speechSynthesis.getVoices()`
+- `autoRun` 逻辑上有漏洞。比如说我想保存一个对象。一开始这个对象的property不全。后来全了。但是新增的props并不被monitor。
+  - 一个workaround是把property的值设为null。
+    - 不设为undefined，因为json不支持，持久化会有问题。 不过这个问题和本项目无关
+- 如果有循环引用的结构，会报错 `Uncaught RangeError: Maximum call stack size exceeded`
 
 
 ## Notes
