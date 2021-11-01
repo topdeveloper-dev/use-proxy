@@ -112,7 +112,9 @@ export function autoRun<T>(
   let isTrigger: (event: ProxyEvent) => boolean;
   const listener = (event: ProxyEvent) => {
     if (isTrigger(event)) {
+      proxy.__emitter__.off('event', listener);
       runOnce();
+      proxy.__emitter__.on('event', listener);
     }
   };
   let runOnce = () => {
