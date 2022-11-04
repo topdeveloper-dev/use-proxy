@@ -109,7 +109,7 @@ export function autoRun<T>(
   func: () => void,
   decorator?: (func: () => void) => () => void
 ): {start: () => void; stop: () => void} {
-  let isTrigger: (event: ProxyEvent) => boolean;
+  let isTrigger: (event: ProxyEvent) => boolean = () => true;
   const listener = (event: ProxyEvent) => {
     if (isTrigger(event)) {
       proxy.__emitter__.off('event', listener);
