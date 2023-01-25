@@ -60,9 +60,9 @@ class App extends Component<{store: Store}> {
 ### Functional React Component
 
 ```ts
-import {component} from '@tylerlong/use-proxy/build/react';
+import {$} from '@tylerlong/use-proxy/build/react';
 
-const App = component((props: {store: Store}) => {
+const App = $((props: {store: Store}) => {
   const store = props.store;
   return (
     <div>

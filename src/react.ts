@@ -46,7 +46,7 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
   }
 }
 
-export const component = (f: Function) => {
+export const $ = (f: Function) => {
   class MyComponent<P = {}, S = {}> extends Component<P, S> {
     render() {
       return f(this.props);

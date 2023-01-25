@@ -1,7 +1,7 @@
 import TestRenderer from 'react-test-renderer';
 import React from 'react';
 
-import {component} from '../src/react';
+import {$} from '../src/react';
 import {useProxy} from '../src';
 
 class Store {
@@ -31,7 +31,7 @@ class Hanzi {
 
 const store = useProxy(new Store());
 
-const App = component((props: {store: Store}) => {
+const App = $((props: {store: Store}) => {
   const store = props.store;
   return (
     <>
@@ -43,7 +43,7 @@ const App = component((props: {store: Store}) => {
 
 const renderHistory: string[] = [];
 
-const HanziComponent = component((props: {hanzi: Hanzi}) => {
+const HanziComponent = $((props: {hanzi: Hanzi}) => {
   const {hanzi} = props;
   renderHistory.push(hanzi.hanzi);
   return <>{hanzi.hanzi}</>;
