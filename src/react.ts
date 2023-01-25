@@ -1,5 +1,5 @@
 // eslint-disable-next-line node/no-unpublished-import
-import React, {useReducer} from 'react';
+import React from 'react';
 
 import {useProxy, run, releaseChildren, ProxyType} from '.';
 import {ProxyEvent} from './models';
@@ -46,19 +46,11 @@ export class Component<P = {}, S = {}> extends React.Component<P, S> {
   }
 }
 
-export const autoUpdate = (Element: Function) => {
-  const NewElement = (props: any) => {
-    const [, forceUpdate] = useReducer(x => x + 1, 0);
-    const proxy = useProxy(props);
-    const [result, isTrigger] = run(proxy, () => Element(props));
-    const listener = (event: ProxyEvent) => {
-      if (isTrigger(event)) {
-        proxy.__emitter__.off('event', listener);
-        forceUpdate();
-      }
-    };
-    proxy.__emitter__.on('event', listener);
-    return result;
-  };
-  return NewElement;
+export const component = (f: Function) => {
+  class MyComponent<P = {}, S = {}> extends Component<P, S> {
+    render() {
+      return f(this.props);
+    }
+  }
+  return MyComponent;
 };

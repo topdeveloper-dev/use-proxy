@@ -1,7 +1,7 @@
-import TestRenderer, {act} from 'react-test-renderer';
+import TestRenderer from 'react-test-renderer';
 import React from 'react';
 
-import {Component, autoUpdate} from '../src/react';
+import {component} from '../src/react';
 import {useProxy} from '../src';
 
 class Store {
@@ -31,21 +31,19 @@ class Hanzi {
 
 const store = useProxy(new Store());
 
-class App extends Component<{store: Store}> {
-  render() {
-    const store = this.props.store;
-    return (
-      <>
-        <button onClick={() => store.changeHanzi()}>Change Hanzi</button>
-        <HanziComponent hanzi={store.hanzi} />
-      </>
-    );
-  }
-}
+const App = component((props: {store: Store}) => {
+  const store = props.store;
+  return (
+    <>
+      <button onClick={() => store.changeHanzi()}>Change Hanzi</button>
+      <HanziComponent hanzi={store.hanzi} />
+    </>
+  );
+});
 
 const renderHistory: string[] = [];
 
-const HanziComponent = autoUpdate((props: {hanzi: Hanzi}) => {
+const HanziComponent = component((props: {hanzi: Hanzi}) => {
   const {hanzi} = props;
   renderHistory.push(hanzi.hanzi);
   return <>{hanzi.hanzi}</>;
@@ -60,25 +58,15 @@ describe('React', () => {
     );
 
     expect(renderHistory).toEqual(['刘']);
-    await act(() => {
-      store.hanzi.hanzi = '劉';
-    });
+    store.hanzi.hanzi = '劉';
     expect(renderHistory).toEqual(['刘', '劉']);
-    await act(() => {
-      changeButton.props.onClick();
-    });
+    changeButton.props.onClick();
     expect(renderHistory).toEqual(['刘', '劉', '春']);
-    await act(() => {
-      store.hanzi.hanzi = '耀';
-    });
+    store.hanzi.hanzi = '耀';
     expect(renderHistory).toEqual(['刘', '劉', '春', '耀']);
-    await act(() => {
-      changeButton.props.onClick();
-    });
+    changeButton.props.onClick();
     expect(renderHistory).toEqual(['刘', '劉', '春', '耀', '涛']);
-    await act(() => {
-      store.hanzi.hanzi = '阳';
-    });
+    store.hanzi.hanzi = '阳';
     expect(renderHistory).toEqual(['刘', '劉', '春', '耀', '涛', '阳']);
   });
 });
